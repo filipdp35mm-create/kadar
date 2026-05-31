@@ -528,12 +528,22 @@ export default function Home() {
                     opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
                   }}>{film.tag}</div>
 
-                  <div style={{
-                    position: 'absolute', top: '16px', right: '16px',
-                    fontSize: '11px', letterSpacing: '2px', color: '#f0e8d0', textTransform: 'uppercase',
-                    opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
-                    background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '1px',
-                  }}>{film.country} &middot; {film.type}</div>
+<div style={{
+  position: 'absolute', top: '16px', right: '16px',
+  display: 'flex', gap: '6px',
+  opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
+}}>
+  <span style={{
+    fontSize: '10px', letterSpacing: '2px', color: '#f0e8d0', textTransform: 'uppercase',
+    background: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '1px',
+    border: '0.5px solid rgba(255,255,255,0.1)',
+  }}>{film.type}</span>
+  <span style={{
+    fontSize: '10px', letterSpacing: '2px', color: '#c9a84c', textTransform: 'uppercase',
+    background: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '1px',
+    border: '0.5px solid rgba(201,168,76,0.3)',
+  }}>{film.year}</span>
+</div>
 
                   <button onClick={prev} style={{
                     position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
