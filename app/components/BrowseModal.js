@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
-const CATEGORIES = ['All', 'Action', 'Thriller', 'Drama', 'Music Video'];
+const CATEGORIES = ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance', 'Music Video'];
 
 const COUNTRY_MAP = {
   'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
