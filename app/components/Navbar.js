@@ -12,7 +12,12 @@ const [username, setUsername] = useState(null);
 const [hoveredBtn, setHoveredBtn] = useState(null);
 const [dark, setDark] = useState(true);
 const [hoveredNav, setHoveredNav] = useState(null);
-
+const COUNTRY_MAP = {
+  'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
+  'Albania': 'AL', 'Greece': 'GR', 'Bosnia': 'BA',
+  'Croatia': 'HR', 'Kosovo': 'KOS', 'Montenegro': 'MNE',
+  'Romania': 'RO', 'Slovenia': 'SI',
+};
 
 
 async function fetchUsername(userId) {
@@ -106,7 +111,9 @@ return () => {
       onMouseEnter={() => setHoveredNav(nav.label)}
       onMouseLeave={() => setHoveredNav(null)}
     >
-      <a href="#" style={{
+<a href="#"
+  onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('open-browse', { detail: {} })); }}
+  style={{
         color: hoveredNav === nav.label ? '#f0e8d0' : '#8a7f6a',
         textDecoration: 'none', fontSize: '13px',
         fontWeight: '500', letterSpacing: '2px', textTransform: 'uppercase',
@@ -155,16 +162,17 @@ return () => {
                   <li key={item}>
                     <a
                       href="#"
-                      style={{
-                        fontSize: '13px', color: '#8a7f6a',
-                        textDecoration: 'none', letterSpacing: '0.5px',
-                        transition: 'color 0.2s ease', whiteSpace: 'nowrap',
+                      onClick={e => {
+                        e.preventDefault();
+                        setHoveredNav(null);
+                        if (section.heading === 'Genre') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCategory: item } }));
+                        else if (section.heading === 'Country') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCountry: item } }));
+                        else if (section.heading === 'Year') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialYear: item } }));
                       }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#f0e8d0'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#8a7f6a'}
-                    >
-                      {item}
-                    </a>
+                      style={{ fontSize: '13px', color: '#8a7f6a', textDecoration: 'none', letterSpacing: '0.5px', transition: 'color 0.2s ease', whiteSpace: 'nowrap' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#f0e8d0'; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#8a7f6a'; }}
+                    >{item}</a>
                   </li>
                 ))}
               </ul>

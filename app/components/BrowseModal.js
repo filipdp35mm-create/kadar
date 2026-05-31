@@ -5,6 +5,13 @@ import { supabase } from '../lib/supabase';
 
 const CATEGORIES = ['All', 'Action', 'Thriller', 'Drama', 'Music Video'];
 
+const COUNTRY_MAP = {
+  'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
+  'Albania': 'AL', 'Greece': 'GR', 'Bosnia': 'BA',
+  'Croatia': 'HR', 'Kosovo': 'KOS', 'Montenegro': 'MNE',
+  'Romania': 'RO', 'Slovenia': 'SI',
+};
+
 // ============================================
 // AUTH + SUBSCRIPTION POPUP
 // Shown when user can't watch a film
@@ -139,11 +146,11 @@ function WatchPopup({ type, onClose }) {
   );
 }
 
-export default function BrowseModal({ onClose }) {
+export default function BrowseModal({ onClose, initialCategory = 'All', initialCountry = 'All Countries', initialYear = 'All Years' }) {
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [selectedYear, setSelectedYear] = useState('All Years');
-  const [selectedCountry, setSelectedCountry] = useState('All Countries');
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_MAP[initialCountry] || initialCountry);
   const [visible, setVisible] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
   const [cardPos, setCardPos] = useState(null);

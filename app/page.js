@@ -132,7 +132,8 @@ export default function Home() {
   const [transitioning, setTransitioning] = useState(false);
   const [glowLeft, setGlowLeft] = useState(false);
   const [glowRight, setGlowRight] = useState(false);
-  const [showBrowse, setShowBrowse] = useState(false);
+const [showBrowse, setShowBrowse] = useState(false);
+const [browseFilters, setBrowseFilters] = useState({});
 
   const pageRef = useRef(null);
   const featuredRef = useRef(null);
@@ -157,6 +158,15 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+useEffect(() => {
+  function handleOpenBrowse(e) {
+    setBrowseFilters(e.detail || {});
+    setShowBrowse(true);
+  }
+  window.addEventListener('open-browse', handleOpenBrowse);
+  return () => window.removeEventListener('open-browse', handleOpenBrowse);
+}, []);
 
   // Mouse tracking for spotlight + hide over main screen
   const [spotlightHidden, setSpotlightHidden] = useState(false);
@@ -632,7 +642,8 @@ export default function Home() {
           50% { text-shadow: 0 0 16px rgba(201,168,76,0.7), 0 0 40px rgba(201,168,76,0.3); }
         }
       `}</style>
-      {showBrowse && <BrowseModal onClose={() => setShowBrowse(false)} />}
+
+      {showBrowse && <BrowseModal onClose={() => { setShowBrowse(false); setBrowseFilters({}); }} {...browseFilters} />}
     </>
   );
 }
