@@ -83,28 +83,28 @@ function WatchPopup({ type, onClose }) {
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
           {type === 'login' && (
             <>
-              <button
-                onClick={() => window.location.href = '/auth'}
-                style={{
-                  background: '#c9a84c', border: 'none', color: '#0a0a0a',
-                  padding: '11px 28px', fontSize: '11px', fontWeight: '700',
-                  letterSpacing: '3px', textTransform: 'uppercase',
-                  cursor: 'pointer', borderRadius: '2px',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
-                onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
-              >Sign In</button>
-              <button
-                onClick={() => window.location.href = '/auth?mode=register'}
-                style={{
-                  background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
-                  padding: '11px 28px', fontSize: '11px', fontWeight: '500',
-                  letterSpacing: '3px', textTransform: 'uppercase',
-                  cursor: 'pointer', borderRadius: '2px',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#f0e8d0'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; }}
-              >Create Account</button>
+<button
+  onClick={() => { window.dispatchEvent(new CustomEvent('open-auth', { detail: 'login' })); }}
+  style={{
+    background: '#c9a84c', border: 'none', color: '#0a0a0a',
+    padding: '11px 28px', fontSize: '11px', fontWeight: '700',
+    letterSpacing: '3px', textTransform: 'uppercase',
+    cursor: 'pointer', borderRadius: '2px',
+  }}
+  onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
+  onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
+>Sign In</button>
+<button
+  onClick={() => { window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' })); }}
+  style={{
+    background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
+    padding: '11px 28px', fontSize: '11px', fontWeight: '500',
+    letterSpacing: '3px', textTransform: 'uppercase',
+    cursor: 'pointer', borderRadius: '2px',
+  }}
+  onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#f0e8d0'; }}
+  onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; }}
+>Create Account</button>
             </>
           )}
           {type === 'link_card' && (

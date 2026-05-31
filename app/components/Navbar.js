@@ -40,7 +40,15 @@ const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess
   }
 });
 
-  return () => subscription.unsubscribe();
+function handleOpenAuth(e) {
+  setModalMode(e.detail);
+  setShowModal(true);
+}
+window.addEventListener('open-auth', handleOpenAuth);
+return () => {
+  subscription.unsubscribe();
+  window.removeEventListener('open-auth', handleOpenAuth);
+};
 }, []);
 
   async function handleSignOut() {

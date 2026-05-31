@@ -6,6 +6,88 @@ import { supabase } from '../../lib/supabase';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
+function WatchPopup({ type, onClose }) {
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 9000,
+      background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: '#0a0a0a', border: '0.5px solid #2a2418',
+        borderRadius: '3px', padding: '48px 40px', width: '420px',
+        textAlign: 'center', position: 'relative',
+      }}>
+        <button onClick={onClose} style={{
+          position: 'absolute', top: '16px', right: '20px',
+          background: 'none', border: 'none', color: '#5a5040',
+          fontSize: '22px', cursor: 'pointer', lineHeight: 1,
+        }}
+          onMouseEnter={e => e.currentTarget.style.color = '#f0e8d0'}
+          onMouseLeave={e => e.currentTarget.style.color = '#5a5040'}
+        >×</button>
+        <div style={{
+          width: '56px', height: '56px', borderRadius: '50%',
+          border: '0.5px solid #c9a84c', margin: '0 auto 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {type === 'login' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" stroke="#c9a84c" strokeWidth="1.5"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          ) : type === 'link_card' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke="#c9a84c" strokeWidth="1.5"/>
+              <line x1="2" y1="10" x2="22" y2="10" stroke="#c9a84c" strokeWidth="1.5"/>
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="#c9a84c">
+              <polygon points="4,2 14,8 4,14"/>
+            </svg>
+          )}
+        </div>
+        <div style={{ fontSize: '18px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '0.5px', marginBottom: '12px' }}>
+          {type === 'login' && 'Sign in to Watch'}
+          {type === 'link_card' && 'Link a Card to Continue'}
+          {type === 'subscribe' && 'Subscribe to Watch'}
+        </div>
+        <p style={{ fontSize: '13px', color: '#8a7f6a', lineHeight: '1.8', letterSpacing: '0.3px', marginBottom: '28px' }}>
+          {type === 'login' && 'Create a free account or sign in to access Кадар. Your first 30 days are free.'}
+          {type === 'link_card' && "Link a payment card to activate your free 30-day trial. You won't be charged during the trial period."}
+          {type === 'subscribe' && 'Your free trial has ended. Subscribe to continue watching short films and music videos from across the Balkans.'}
+        </p>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+          {type === 'login' && (
+            <>
+<button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-auth', { detail: 'login' })); }} style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '11px 28px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+  onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
+  onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
+>Sign In</button>
+<button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' })); }} style={{ background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a', padding: '11px 28px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+  onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#f0e8d0'; }}
+  onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; }}
+>Create Account</button>
+            </>
+          )}
+          {type === 'link_card' && (
+            <button onClick={() => window.location.href = '/account/billing'} style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '11px 28px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
+              onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
+            >Link Card</button>
+          )}
+          {type === 'subscribe' && (
+            <button onClick={() => window.location.href = '/account/billing'} style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '11px 28px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
+              onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
+            >View Plans</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TrailerVideo({ src, muted, onToggleMute, videoRef }) {
   const containerRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -312,6 +394,73 @@ function DirectorSection({ directorId }) {
   );
 }
 
+function PlayButton({ onPlay, label }) {
+  const [fillProgress, setFillProgress] = useState(0);
+  const [ready, setReady] = useState(false);
+  const intervalRef = useRef(null);
+
+  function startFill() {
+    if (ready) return;
+    intervalRef.current = setInterval(() => {
+      setFillProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(intervalRef.current);
+          setReady(true);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 20);
+  }
+
+  function stopFill() {
+    if (ready) return;
+    clearInterval(intervalRef.current);
+    setFillProgress(0);
+  }
+
+  return (
+    <div style={{ marginTop: '40px' }}>
+      <button
+        onMouseEnter={startFill}
+        onMouseLeave={stopFill}
+        onClick={() => ready && onPlay()}
+        style={{
+          position: 'relative',
+          width: '200px', height: '52px',
+          background: 'none',
+          border: `0.5px solid ${ready ? '#c9a84c' : '#3a3020'}`,
+          borderRadius: '1px',
+          cursor: ready ? 'pointer' : 'default',
+          overflow: 'hidden',
+          transition: 'border-color 0.3s ease',
+        }}
+      >
+        <div style={{
+          position: 'absolute', left: 0, top: 0,
+          height: '100%', width: `${fillProgress}%`,
+          background: '#c9a84c',
+          transition: 'width 0.02s linear',
+        }} />
+        <span style={{
+          position: 'relative', zIndex: 1,
+          fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase',
+          color: fillProgress > 50 ? '#0a0a0a' : '#8a7f6a',
+          fontWeight: '600', pointerEvents: 'none',
+          transition: 'color 0.1s ease',
+        }}>
+          {label}
+        </span>
+      </button>
+      {!ready && (
+        <div style={{ fontSize: '9px', letterSpacing: '2px', color: '#3a3020', textTransform: 'uppercase', marginTop: '8px' }}>
+          Hover to unlock
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function FilmPage() {
   const params = useParams();
   const id = params?.id;
@@ -320,9 +469,11 @@ export default function FilmPage() {
   const [inWatchlist, setInWatchlist] = useState(false);
   const [userRating, setUserRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
-  const [muted, setMuted] = useState(true);
-  const videoRef = useRef(null);
-  const glowRef = useRef(null);
+const [muted, setMuted] = useState(true);
+const [popup, setPopup] = useState(null);
+const [profile, setProfile] = useState(null);
+const videoRef = useRef(null);
+const glowRef = useRef(null);
   
 
   useEffect(() => {
@@ -341,9 +492,25 @@ export default function FilmPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-    });
+if (session?.user) {
+  supabase.from('profiles')
+          .select('subscription_status, card_linked, trial_start_date, created_at')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => setProfile(data));
+      }
+    });  
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        supabase.from('profiles')
+          .select('subscription_status, card_linked, trial_start_date, created_at')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => setProfile(data));
+      } else {
+        setProfile(null);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -363,6 +530,29 @@ if (r) setUserRating(r.score);
     }
     fetchUserData();
   }, [user, film]);
+
+function isTrialActive(profile) {
+  if (!profile) return false;
+  const start = new Date(profile.trial_start_date || profile.created_at);
+  const now = new Date();
+  const diffDays = (now - start) / (1000 * 60 * 60 * 24);
+  return diffDays <= 30;
+}
+
+function handlePlay() {
+  if (!user) { setPopup('login'); return; }
+  if (!profile?.card_linked && isTrialActive(profile)) { setPopup('link_card'); return; }
+  if (!isTrialActive(profile) && profile?.subscription_status !== 'active') { setPopup('subscribe'); return; }
+  // Authorized — play the film
+  alert('Playing film...');
+}
+
+function playLabel() {
+  if (!user) return 'Log In to Watch';
+  if (!profile?.card_linked && isTrialActive(profile)) return 'Link Card to Watch';
+  if (!isTrialActive(profile) && profile?.subscription_status !== 'active') return 'Subscribe to Watch';
+  return 'Watch Now';
+}
 
   async function toggleWatchlist() {
     if (!user) return;
@@ -518,6 +708,10 @@ if (r) setUserRating(r.score);
               </div>
             </div>
           )}
+
+                    {/* Play button */}
+          <PlayButton onPlay={handlePlay} label={playLabel()} />
+
         </div>
       </section>
 
@@ -625,7 +819,7 @@ if (r) setUserRating(r.score);
 
 {/* ── DIRECTOR ── */}
 <DirectorSection directorId={film.director_id} />
-
+{popup && <WatchPopup type={popup} onClose={() => setPopup(null)} />}
       <Footer />
     </div>
   );
