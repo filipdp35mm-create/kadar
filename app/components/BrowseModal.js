@@ -3,10 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
-const CATEGORIES = type === 'music_video'
-  ? ['All', 'Hip-Hop', 'Rock', 'Pop', 'EDM', 'Folk', 'Electronic', 'R&B']
-  : ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance'];
-
 const COUNTRY_MAP = {
   'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
   'Albania': 'AL', 'Greece': 'GR', 'Bosnia': 'BA',
@@ -164,6 +160,10 @@ export default function BrowseModal({ onClose, type = 'film', initialCategory = 
 
   const hoverTimer = useRef(null);
   const leaveTimer = useRef(null);
+
+  const CATEGORIES = type === 'music_video'
+  ? ['All', 'Hip-Hop', 'Rock', 'Pop', 'EDM', 'Folk', 'Electronic', 'R&B']
+  : ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance'];
 
   useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
   useEffect(() => {
