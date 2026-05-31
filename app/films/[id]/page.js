@@ -482,6 +482,18 @@ if (r) setUserRating(r.score);
             <span style={{ fontSize: '10px', letterSpacing: '3px', color: '#8a7f6a', textTransform: 'uppercase', border: '0.5px solid #2a2418', padding: '4px 10px', borderRadius: '1px' }}>{film.year}</span>
           </div>
 
+          {film.status && (
+  <span style={{
+    fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase',
+    padding: '4px 10px', borderRadius: '1px',
+    border: `0.5px solid ${film.status === 'released' ? '#2a4a2a' : film.status === 'coming_soon' ? '#4a3a10' : '#2a2418'}`,
+    color: film.status === 'released' ? '#4a9a4a' : film.status === 'coming_soon' ? '#c9a84c' : '#8a7f6a',
+    background: film.status === 'released' ? 'rgba(74,154,74,0.08)' : film.status === 'coming_soon' ? 'rgba(201,168,76,0.08)' : 'transparent',
+  }}>
+    {film.status === 'coming_soon' ? 'Coming Soon' : film.status.replace(/-/g, ' ')}
+  </span>
+)}
+
           <h1 style={{ fontFamily: 'sans-serif', fontSize: '72px', fontWeight: '700', letterSpacing: '-1px', lineHeight: '1.0', color: '#f0e8d0', margin: '0 0 32px' }}>
             {film.title}
           </h1>
