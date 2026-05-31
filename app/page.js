@@ -200,30 +200,38 @@ export default function Home() {
 
   // Fetch featured films from Supabase
   useEffect(() => {
-    async function fetchFeatured() {
-      const { data } = await supabase
-        .from('films')
-        .select(`id, title, type, year, trailer_file, poster_file, featured_image, countries (code), directors (name)`)
-        .eq('status', 'released')
-        .order('created_at', { ascending: false })
-        .limit(5);
+const { data } = await supabase
+  .from('featured')
+  .select(`
+    tag,
+    position,
+    films (
+      id, title, type, year, status,
+      trailer_file, poster_file, featured_image,
+      countries (code),
+      directors (name)
+    )
+  `)
+  .order('position', { ascending: true })
+  .limit(5);
 
-      if (data && data.length > 0) {
-        const tags = ["New Release", "Staff Pick", "Festival Pick", "Editor's Choice", "Must Watch"];
-        const mapped = data.map((film, i) => ({
-          id: film.id,
-          tag: tags[i] || 'Featured',
-          title: film.title,
-          subtitle: film.type,
-          duration: '',
-          country: film.countries?.code || '',
-          year: film.year,
-          type: film.type,
-          featured_image: film.featured_image,
-          trailer_file: film.trailer_file,
-        }));
-        setFeatured(mapped);
-      }
+if (data && data.length > 0) {
+  const mapped = data.map((row) => ({
+    id: row.films.id,
+    tag: row.tag,
+    title: row.films.title,
+    subtitle: row.films.type,
+    duration: '',
+    country: row.films.countries?.code || '',
+    year: row.films.year,
+    type: row.films.type,
+    status: row.films.status,
+    poster_file: row.films.poster_file,
+    featured_image: row.films.featured_image,
+    trailer_file: row.films.trailer_file,
+  }));
+  setFeatured(mapped);
+}
     }
     fetchFeatured();
   }, []);
