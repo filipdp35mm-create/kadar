@@ -168,6 +168,21 @@ useEffect(() => {
   return () => window.removeEventListener('open-browse', handleOpenBrowse);
 }, []);
 
+// Handle ?browse=true URL parameter when coming from other pages
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('browse') === 'true') {
+    const filters = {};
+    if (params.get('category')) filters.initialCategory = params.get('category');
+    if (params.get('country')) filters.initialCountry = params.get('country');
+    if (params.get('year')) filters.initialYear = params.get('year');
+    setBrowseFilters(filters);
+    setShowBrowse(true);
+    window.history.replaceState({}, '', '/');
+  }
+}, []);
+
+
   // Mouse tracking for spotlight + hide over main screen
   const [spotlightHidden, setSpotlightHidden] = useState(false);
   const screenRef = useRef(null);

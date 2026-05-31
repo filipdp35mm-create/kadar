@@ -709,9 +709,11 @@ function playLabel() {
             </div>
           )}
 
-                    {/* Play button */}
-          <PlayButton onPlay={handlePlay} label={playLabel()} />
-
+          {/* Play button — hidden for coming soon films */}
+          {film.status !== 'coming_soon' && (
+            <PlayButton onPlay={handlePlay} label={playLabel()} />
+          )}
+          
         </div>
       </section>
 

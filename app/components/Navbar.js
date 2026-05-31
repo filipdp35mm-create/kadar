@@ -112,7 +112,14 @@ return () => {
       onMouseLeave={() => setHoveredNav(null)}
     >
 <a href="#"
-  onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent('open-browse', { detail: {} })); }}
+  onClick={e => {
+  e.preventDefault();
+  if (window.location.pathname === '/') {
+    window.dispatchEvent(new CustomEvent('open-browse', { detail: {} }));
+  } else {
+    window.location.href = '/?browse=true';
+  }
+}}
   style={{
         color: hoveredNav === nav.label ? '#f0e8d0' : '#8a7f6a',
         textDecoration: 'none', fontSize: '13px',
@@ -165,9 +172,14 @@ return () => {
                       onClick={e => {
                         e.preventDefault();
                         setHoveredNav(null);
-                        if (section.heading === 'Genre') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCategory: item } }));
-                        else if (section.heading === 'Country') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCountry: item } }));
-                        else if (section.heading === 'Year') window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialYear: item } }));
+const isHome = window.location.pathname === '/';
+if (section.heading === 'Genre') {
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCategory: item } })) : window.location.href = `/?browse=true&category=${encodeURIComponent(item)}`;
+} else if (section.heading === 'Country') {
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCountry: item } })) : window.location.href = `/?browse=true&country=${encodeURIComponent(item)}`;
+} else if (section.heading === 'Year') {
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialYear: item } })) : window.location.href = `/?browse=true&year=${encodeURIComponent(item)}`;
+}
                       }}
                       style={{ fontSize: '13px', color: '#8a7f6a', textDecoration: 'none', letterSpacing: '0.5px', transition: 'color 0.2s ease', whiteSpace: 'nowrap' }}
                       onMouseEnter={e => { e.currentTarget.style.color = '#f0e8d0'; }}
