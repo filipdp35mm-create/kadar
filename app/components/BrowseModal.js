@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
-const CATEGORIES = ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance', 'Music Video'];
+const CATEGORIES = type === 'music_video'
+  ? ['All', 'Hip-Hop', 'Rock', 'Pop', 'EDM', 'Folk', 'Electronic', 'R&B']
+  : ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance'];
 
 const COUNTRY_MAP = {
   'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
@@ -146,7 +148,7 @@ function WatchPopup({ type, onClose }) {
   );
 }
 
-export default function BrowseModal({ onClose, initialCategory = 'All', initialCountry = 'All Countries', initialYear = 'All Years' }) {
+export default function BrowseModal({ onClose, type = 'film', initialCategory = 'All', initialCountry = 'All Countries', initialYear = 'All Years' }) {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [selectedYear, setSelectedYear] = useState(initialYear);
@@ -172,10 +174,17 @@ export default function BrowseModal({ onClose, initialCategory = 'All', initialC
   // Load films
   useEffect(() => {
     async function fetchFilms() {
-      const { data } = await supabase
-        .from('films')
-        .select(`*, directors (name), countries (code, name)`)
-        .eq('status', 'released');
+const query = supabase
+  .from('films')
+  .select(`*, directors (name), countries (code, name)`);
+
+if (type === 'music_video') {
+  query.eq('type', 'Music Video');
+} else {
+  query.eq('status', 'released').neq('type', 'Music Video');
+}
+
+const { data } = await query;
       if (data) setFilms(data);
     }
     fetchFilms();
@@ -298,7 +307,9 @@ export default function BrowseModal({ onClose, initialCategory = 'All', initialC
 
         {/* Top bar */}
         <div style={{ padding: '28px 40px', borderBottom: '0.5px solid #1a1610', display: 'flex', gap: '16px', alignItems: 'center', flexShrink: 0, zIndex: 2, position: 'relative' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#c9a84c', fontWeight: '600', whiteSpace: 'nowrap', marginRight: '8px' }}>Browse</div>
+          <div style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#c9a84c', fontWeight: '600', whiteSpace: 'nowrap', marginRight: '8px' }}>
+  {type === 'music_video' ? 'Music Videos' : 'Browse Films'}
+</div>
           <div style={{ position: 'relative', flex: 1 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>
               <circle cx="11" cy="11" r="8" stroke="#f0e8d0" strokeWidth="1.5"/>

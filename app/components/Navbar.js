@@ -112,12 +112,14 @@ return () => {
       onMouseLeave={() => setHoveredNav(null)}
     >
 <a href="#"
-  onClick={e => {
+onClick={e => {
   e.preventDefault();
+  const isMV = nav.label === 'Music Videos';
+  const detail = isMV ? { type: 'music_video' } : {};
   if (window.location.pathname === '/') {
-    window.dispatchEvent(new CustomEvent('open-browse', { detail: {} }));
+    window.dispatchEvent(new CustomEvent('open-browse', { detail }));
   } else {
-    window.location.href = '/?browse=true';
+    window.location.href = isMV ? '/?browse=true&type=music_video' : '/?browse=true';
   }
 }}
   style={{
@@ -173,12 +175,14 @@ return () => {
                         e.preventDefault();
                         setHoveredNav(null);
 const isHome = window.location.pathname === '/';
+const isMV = nav.label === 'Music Videos';
+const baseType = isMV ? { type: 'music_video' } : {};
 if (section.heading === 'Genre') {
-  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCategory: item } })) : window.location.href = `/?browse=true&category=${encodeURIComponent(item)}`;
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { ...baseType, initialCategory: item } })) : window.location.href = `/?browse=true${isMV ? '&type=music_video' : ''}&category=${encodeURIComponent(item)}`;
 } else if (section.heading === 'Country') {
-  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialCountry: item } })) : window.location.href = `/?browse=true&country=${encodeURIComponent(item)}`;
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { ...baseType, initialCountry: item } })) : window.location.href = `/?browse=true${isMV ? '&type=music_video' : ''}&country=${encodeURIComponent(item)}`;
 } else if (section.heading === 'Year') {
-  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { initialYear: item } })) : window.location.href = `/?browse=true&year=${encodeURIComponent(item)}`;
+  isHome ? window.dispatchEvent(new CustomEvent('open-browse', { detail: { ...baseType, initialYear: item } })) : window.location.href = `/?browse=true${isMV ? '&type=music_video' : ''}&year=${encodeURIComponent(item)}`;
 }
                       }}
                       style={{ fontSize: '13px', color: '#8a7f6a', textDecoration: 'none', letterSpacing: '0.5px', transition: 'color 0.2s ease', whiteSpace: 'nowrap' }}
