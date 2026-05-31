@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from './lib/supabase';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import YourPicks from './components/YourPicks';
@@ -9,7 +10,9 @@ import FanFavorites from './components/FanFavorites';
 import ComingSoon from './components/ComingSoon';
 import BrowseModal from './components/BrowseModal';
 
-
+// ============================================
+// COUNT UP HOOK
+// ============================================
 function useCountUp(target, duration = 2000, start = false) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -30,6 +33,9 @@ function useCountUp(target, duration = 2000, start = false) {
   return count;
 }
 
+// ============================================
+// FILM LOADER
+// ============================================
 function FilmLoader({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState('loading');
@@ -79,32 +85,34 @@ function FilmLoader({ onComplete }) {
   );
 }
 
-const FEATURED = [
-  { id: 1, tag: 'New Release', title: 'Последниот Воз', subtitle: 'Watch the Trailer', duration: '2:14', country: 'MK', year: '2024', type: 'Short Film' },
-  { id: 2, tag: 'Music Video', title: 'Bela Soba', subtitle: 'Official Music Video', duration: '3:42', country: 'SRB', year: '2024', type: 'Music Video' },
-  { id: 3, tag: 'Festival Pick', title: 'Нощен Влак', subtitle: 'Sarajevo FF Selection', duration: '18:00', country: 'BG', year: '2023', type: 'Short Film' },
-  { id: 4, tag: 'Staff Pick', title: 'Tihi Grad', subtitle: 'Watch the Short Film', duration: '14:30', country: 'HR', year: '2024', type: 'Short Film' },
-  { id: 5, tag: "Editor's Choice", title: 'Valuri', subtitle: 'Romanian Competition Entry', duration: '22:10', country: 'RO', year: '2024', type: 'Short Film' },
-];
-
-function PosterThumb({ small = false }) {
+// ============================================
+// POSTER THUMB PLACEHOLDER
+// ============================================
+function PosterThumb({ small = false, src }) {
   return (
     <div style={{
       width: small ? '100px' : '140px', height: small ? '70px' : '96px',
       background: '#161208', border: '0.5px solid #2a2418', borderRadius: '2px',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, overflow: 'hidden', position: 'relative',
     }}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.2 }}>
-        <rect x="2" y="2" width="20" height="20" rx="1" stroke="#c9a84c" strokeWidth="0.5"/>
-        <circle cx="12" cy="12" r="4" stroke="#c9a84c" strokeWidth="0.5"/>
-        <line x1="2" y1="7" x2="22" y2="7" stroke="#c9a84c" strokeWidth="0.5"/>
-        <line x1="2" y1="17" x2="22" y2="17" stroke="#c9a84c" strokeWidth="0.5"/>
-      </svg>
+      {src ? (
+        <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+      ) : (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.2 }}>
+          <rect x="2" y="2" width="20" height="20" rx="1" stroke="#c9a84c" strokeWidth="0.5"/>
+          <circle cx="12" cy="12" r="4" stroke="#c9a84c" strokeWidth="0.5"/>
+          <line x1="2" y1="7" x2="22" y2="7" stroke="#c9a84c" strokeWidth="0.5"/>
+          <line x1="2" y1="17" x2="22" y2="17" stroke="#c9a84c" strokeWidth="0.5"/>
+        </svg>
+      )}
     </div>
   );
 }
 
-// Single film frame for the strip
+// ============================================
+// FILM FRAME (left strip)
+// ============================================
 function FilmFrame() {
   return (
     <div style={{
@@ -120,6 +128,9 @@ function FilmFrame() {
   );
 }
 
+// ============================================
+// MAIN PAGE
+// ============================================
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [mousePos, setMousePos] = useState({ x: -999, y: -999 });
@@ -132,11 +143,16 @@ export default function Home() {
   const [transitioning, setTransitioning] = useState(false);
   const [glowLeft, setGlowLeft] = useState(false);
   const [glowRight, setGlowRight] = useState(false);
-const [showBrowse, setShowBrowse] = useState(false);
-const [browseFilters, setBrowseFilters] = useState({});
+  const [showBrowse, setShowBrowse] = useState(false);
+  const [browseFilters, setBrowseFilters] = useState({});
+  const [featured, setFeatured] = useState([]);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [spotlightHidden, setSpotlightHidden] = useState(false);
 
   const pageRef = useRef(null);
   const featuredRef = useRef(null);
+  const screenRef = useRef(null);
+  const scrollTimerRef = useRef(null);
 
   const films = useCountUp(50, 2000, loaded);
   const videos = useCountUp(20, 2200, loaded);
@@ -145,9 +161,7 @@ const [browseFilters, setBrowseFilters] = useState({});
   const staticLine1 = 'THE FRAME';
   const staticLine2 = 'IS THE';
 
-  const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimerRef = useRef(null);
-
+  // Scroll tracking
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -159,34 +173,62 @@ const [browseFilters, setBrowseFilters] = useState({});
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-useEffect(() => {
-  function handleOpenBrowse(e) {
-    setBrowseFilters(e.detail || {});
-    setShowBrowse(true);
-  }
-  window.addEventListener('open-browse', handleOpenBrowse);
-  return () => window.removeEventListener('open-browse', handleOpenBrowse);
-}, []);
+  // Browse modal event listener
+  useEffect(() => {
+    function handleOpenBrowse(e) {
+      setBrowseFilters(e.detail || {});
+      setShowBrowse(true);
+    }
+    window.addEventListener('open-browse', handleOpenBrowse);
+    return () => window.removeEventListener('open-browse', handleOpenBrowse);
+  }, []);
 
-// Handle ?browse=true URL parameter when coming from other pages
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('browse') === 'true') {
-    const filters = {};
-    if (params.get('category')) filters.initialCategory = params.get('category');
-    if (params.get('country')) filters.initialCountry = params.get('country');
-    if (params.get('year')) filters.initialYear = params.get('year');
-    setBrowseFilters(filters);
-    setShowBrowse(true);
-    window.history.replaceState({}, '', '/');
-  }
-}, []);
+  // Handle ?browse=true URL parameter from other pages
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('browse') === 'true') {
+      const filters = {};
+      if (params.get('category')) filters.initialCategory = params.get('category');
+      if (params.get('country')) filters.initialCountry = params.get('country');
+      if (params.get('year')) filters.initialYear = params.get('year');
+      if (params.get('type')) filters.type = params.get('type');
+      setBrowseFilters(filters);
+      setShowBrowse(true);
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
+  // Fetch featured films from Supabase
+  useEffect(() => {
+    async function fetchFeatured() {
+      const { data } = await supabase
+        .from('films')
+        .select(`id, title, type, year, trailer_file, poster_file, countries (code), directors (name)`)
+        .eq('status', 'released')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-  // Mouse tracking for spotlight + hide over main screen
-  const [spotlightHidden, setSpotlightHidden] = useState(false);
-  const screenRef = useRef(null);
+      if (data && data.length > 0) {
+        const tags = ["New Release", "Staff Pick", "Festival Pick", "Editor's Choice", "Must Watch"];
+        const mapped = data.map((film, i) => ({
+          id: film.id,
+          tag: tags[i] || 'Featured',
+          title: film.title,
+          subtitle: film.type,
+          duration: '',
+          country: film.countries?.code || '',
+          year: film.year,
+          type: film.type,
+          poster_file: film.poster_file,
+          trailer_file: film.trailer_file,
+        }));
+        setFeatured(mapped);
+      }
+    }
+    fetchFeatured();
+  }, []);
 
+  // Mouse tracking for spotlight
   useEffect(() => {
     const handleMouse = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -236,12 +278,12 @@ useEffect(() => {
 
   // Featured auto-rotate
   useEffect(() => {
-    if (paused) return;
+    if (paused || featured.length === 0) return;
     const timer = setInterval(() => {
-      triggerTransition((current + 1) % FEATURED.length);
+      triggerTransition((current + 1) % featured.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [paused, current]);
+  }, [paused, current, featured.length]);
 
   function triggerTransition(index) {
     setTransitioning(true);
@@ -257,23 +299,23 @@ useEffect(() => {
   function prev() {
     setGlowLeft(true);
     setTimeout(() => setGlowLeft(false), 600);
-    goTo((current - 1 + FEATURED.length) % FEATURED.length);
+    goTo((current - 1 + featured.length) % featured.length);
   }
 
   function next() {
     setGlowRight(true);
     setTimeout(() => setGlowRight(false), 600);
-    goTo((current + 1) % FEATURED.length);
+    goTo((current + 1) % featured.length);
   }
 
-  const film = FEATURED[current];
+  const film = featured[current];
+  const R2 = process.env.NEXT_PUBLIC_R2_URL;
 
   return (
     <>
       {!loaded && <FilmLoader onComplete={() => setLoaded(true)} />}
 
-      {/* Spotlight — hides behind featured screen */}
-      {/* Spotlight — hidden when modal open */}
+      {/* Spotlight */}
       <div style={{
         position: 'fixed',
         width: '140px', height: '140px', borderRadius: '50%',
@@ -281,8 +323,7 @@ useEffect(() => {
         left: mousePos.x - 70, top: mousePos.y - 70,
         pointerEvents: 'none',
         transition: 'left 0.05s ease, top 0.05s ease, opacity 0.3s ease',
-        zIndex: 9998,
-        mixBlendMode: 'screen',
+        zIndex: 9998, mixBlendMode: 'screen',
         opacity: spotlightHidden || showBrowse ? 0 : 1,
       }} />
 
@@ -307,7 +348,7 @@ useEffect(() => {
         {/* Static navbar */}
         <Navbar />
 
-        {/* LEFT film strip — full page height */}
+        {/* LEFT film strip */}
         <div style={{
           position: 'fixed', top: '90px', left: 0, width: '48px',
           bottom: '0', overflow: 'hidden', pointerEvents: 'none', zIndex: 1,
@@ -322,10 +363,7 @@ useEffect(() => {
         </div>
 
         {/* ============ HERO SECTION ============ */}
-        <section style={{
-          padding: '80px 80px 100px',
-          position: 'relative', overflow: 'hidden', minHeight: '520px',
-        }}>
+        <section style={{ padding: '80px 80px 100px', position: 'relative', overflow: 'hidden', minHeight: '520px' }}>
 
           {/* Background blurred КАДАР */}
           <div style={{
@@ -335,11 +373,9 @@ useEffect(() => {
             letterSpacing: '-5px', lineHeight: '1',
             userSelect: 'none', pointerEvents: 'none',
             fontWeight: '700', filter: 'blur(8px)', whiteSpace: 'nowrap', zIndex: 0,
-          }}>
-            КАДАР
-          </div>
+          }}>КАДАР</div>
 
-          {/* RIGHT poster strip — hero only, recently watched placeholders */}
+          {/* Right poster strip */}
           <div style={{
             position: 'absolute', top: '70px', right: 0, width: '160px', height: 'calc(100% - 70px)',
             display: 'flex', flexDirection: 'column', zIndex: 1, pointerEvents: 'none',
@@ -363,7 +399,6 @@ useEffect(() => {
 
           {/* Hero content */}
           <div style={{ position: 'relative', zIndex: 2, maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
-
             <div style={{
               fontSize: '11px', fontWeight: '500', letterSpacing: '4px',
               textTransform: 'uppercase', color: '#c9a84c', marginBottom: '16px',
@@ -388,9 +423,7 @@ useEffect(() => {
                   textTransform: 'none', letterSpacing: '1px',
                   animation: 'storyPulse 3s ease-in-out infinite',
                   display: 'inline-block',
-                }}>
-                  Story
-                </span>
+                }}>Story</span>
               </span>
             </h1>
 
@@ -403,58 +436,27 @@ useEffect(() => {
               Discover directors, track festivals, rate and review the work that defines a region.
             </p>
 
-<button
-  onClick={() => setShowBrowse(true)}
-  style={{
-    background: '#c9a84c', border: 'none', color: '#0a0a0a',
-    padding: '12px 28px', fontSize: '13px', fontWeight: '700',
-    letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
-    borderRadius: '2px', position: 'relative', overflow: 'hidden',
-    transition: 'all 0.15s ease',
-  }}
-  onMouseEnter={e => {
-                  e.currentTarget.style.background = '#fff7e0';
-                  e.currentTarget.style.boxShadow = '0 0 24px rgba(201,168,76,0.6), 0 0 8px rgba(201,168,76,0.4)';
-                  setTimeout(() => {
-                    if (e.currentTarget) {
-                      e.currentTarget.style.background = '#c9a84c';
-                      e.currentTarget.style.boxShadow = '0 0 12px rgba(201,168,76,0.3)';
-                    }
-                  }, 150);
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = '#c9a84c';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                Browse Films
-              </button>
-              <button
-                style={{
-                  background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
-                  padding: '12px 28px', fontSize: '13px', fontWeight: '500',
-                  letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
-                  borderRadius: '2px', position: 'relative', overflow: 'hidden',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = '#c9a84c';
-                  e.currentTarget.style.color = '#fff7e0';
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(201,168,76,0.4), inset 0 0 20px rgba(201,168,76,0.05)';
-                  setTimeout(() => {
-                    if (e.currentTarget) {
-                      e.currentTarget.style.boxShadow = '0 0 8px rgba(201,168,76,0.15), inset 0 0 12px rgba(201,168,76,0.03)';
-                    }
-                  }, 150);
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#3a3020';
-                  e.currentTarget.style.color = '#8a7f6a';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                For Directors
-              </button>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button onClick={() => setShowBrowse(true)} style={{
+                background: '#c9a84c', border: 'none', color: '#0a0a0a',
+                padding: '12px 28px', fontSize: '13px', fontWeight: '700',
+                letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
+                borderRadius: '2px', transition: 'all 0.15s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#fff7e0'; e.currentTarget.style.boxShadow = '0 0 24px rgba(201,168,76,0.6)'; setTimeout(() => { if (e.currentTarget) { e.currentTarget.style.background = '#c9a84c'; e.currentTarget.style.boxShadow = '0 0 12px rgba(201,168,76,0.3)'; } }, 150); }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; e.currentTarget.style.boxShadow = 'none'; }}
+              >Browse Films</button>
+
+              <button style={{
+                background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
+                padding: '12px 28px', fontSize: '13px', fontWeight: '500',
+                letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
+                borderRadius: '2px', transition: 'all 0.15s ease',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#fff7e0'; e.currentTarget.style.boxShadow = '0 0 20px rgba(201,168,76,0.4)'; setTimeout(() => { if (e.currentTarget) { e.currentTarget.style.boxShadow = '0 0 8px rgba(201,168,76,0.15)'; } }, 150); }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; e.currentTarget.style.boxShadow = 'none'; }}
+              >For Directors</button>
+            </div>
 
             <div style={{ display: 'flex', marginTop: '48px', borderTop: '0.5px solid #1a1610', paddingTop: '32px' }}>
               {[
@@ -477,171 +479,179 @@ useEffect(() => {
         </section>
 
         {/* ============ FEATURED SECTION ============ */}
-        <section ref={featuredRef} style={{
-          padding: '0 80px 60px', background: '#0a0a0a',
-          position: 'relative', zIndex: 0, marginTop: '-1px',
-        }}>
+        {featured.length > 0 && film && (
+          <section ref={featuredRef} style={{
+            padding: '0 80px 60px', background: '#0a0a0a',
+            position: 'relative', zIndex: 0, marginTop: '-1px',
+          }}>
+            <div style={{ paddingTop: '48px', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+              <span style={{ fontFamily: 'sans-serif', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#8a7f6a', fontWeight: '500' }}>Featured</span>
+              <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
+            </div>
 
-          <div style={{ paddingTop: '48px', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-            <span style={{ fontFamily: 'sans-serif', fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#8a7f6a', fontWeight: '500' }}>Featured</span>
-            <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
-          </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
-
-            {/* Main visual */}
-            <div>
-              <div ref={screenRef} style={{
-                position: 'relative', background: '#0d0c08',
-                border: '0.5px solid #2a2418', borderRadius: '2px',
-                overflow: 'hidden', aspectRatio: '16/9',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
-                transform: 'translateY(-4px)',
-              }}>
-                <div style={{
-                  position: 'absolute', inset: 0,
+              {/* Main visual */}
+              <div>
+                <div ref={screenRef} style={{
+                  position: 'relative', background: '#0d0c08',
+                  border: '0.5px solid #2a2418', borderRadius: '2px',
+                  overflow: 'hidden', aspectRatio: '16/9',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  opacity: transitioning ? 0 : 1,
-                  transform: transitioning ? 'scale(1.02)' : 'scale(1)',
-                  transition: 'opacity 0.3s ease, transform 0.3s ease',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
+                  transform: 'translateY(-4px)',
                 }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.08 }}>
-                    <rect x="2" y="2" width="20" height="20" rx="1" stroke="#c9a84c" strokeWidth="0.5"/>
-                    <circle cx="12" cy="12" r="4" stroke="#c9a84c" strokeWidth="0.5"/>
-                    <line x1="2" y1="7" x2="22" y2="7" stroke="#c9a84c" strokeWidth="0.5"/>
-                    <line x1="2" y1="17" x2="22" y2="17" stroke="#c9a84c" strokeWidth="0.5"/>
-                  </svg>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    opacity: transitioning ? 0 : 1,
+                    transform: transitioning ? 'scale(1.02)' : 'scale(1)',
+                    transition: 'opacity 0.3s ease, transform 0.3s ease',
+                  }}>
+                    {film.poster_file ? (
+                      <img src={`${R2}/${film.poster_file}`} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+                    ) : (
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.08 }}>
+                        <rect x="2" y="2" width="20" height="20" rx="1" stroke="#c9a84c" strokeWidth="0.5"/>
+                        <circle cx="12" cy="12" r="4" stroke="#c9a84c" strokeWidth="0.5"/>
+                        <line x1="2" y1="7" x2="22" y2="7" stroke="#c9a84c" strokeWidth="0.5"/>
+                        <line x1="2" y1="17" x2="22" y2="17" stroke="#c9a84c" strokeWidth="0.5"/>
+                      </svg>
+                    )}
+                  </div>
+
+                  <div style={{
+                    position: 'absolute', top: '16px', left: '16px',
+                    background: '#c9a84c', color: '#0a0a0a',
+                    fontSize: '10px', fontWeight: '700', letterSpacing: '2px',
+                    textTransform: 'uppercase', padding: '4px 10px', borderRadius: '1px',
+                    opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
+                  }}>{film.tag}</div>
+
+                  <div style={{
+                    position: 'absolute', top: '16px', right: '16px',
+                    fontSize: '11px', letterSpacing: '2px', color: '#f0e8d0', textTransform: 'uppercase',
+                    opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
+                    background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '1px',
+                  }}>{film.country} &middot; {film.type}</div>
+
+                  <button onClick={prev} style={{
+                    position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(10,10,10,0.7)', border: '0.5px solid #2a2418',
+                    color: glowLeft ? '#c9a84c' : '#f0e8d0',
+                    width: '36px', height: '36px', borderRadius: '50%',
+                    cursor: 'pointer', fontSize: '18px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: glowLeft ? '0 0 12px rgba(201,168,76,0.8), 0 0 24px rgba(201,168,76,0.4)' : 'none',
+                    transition: 'box-shadow 0.2s ease, color 0.2s ease, transform 0.1s ease', zIndex: 2,
+                  }}
+                    onMouseDown={e => e.currentTarget.style.transform = 'translateY(-50%) scale(0.85)'}
+                    onMouseUp={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+                  >‹</button>
+
+                  <button onClick={next} style={{
+                    position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(10,10,10,0.7)', border: '0.5px solid #2a2418',
+                    color: glowRight ? '#c9a84c' : '#f0e8d0',
+                    width: '36px', height: '36px', borderRadius: '50%',
+                    cursor: 'pointer', fontSize: '18px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: glowRight ? '0 0 12px rgba(201,168,76,0.8), 0 0 24px rgba(201,168,76,0.4)' : 'none',
+                    transition: 'box-shadow 0.2s ease, color 0.2s ease, transform 0.1s ease', zIndex: 2,
+                  }}
+                    onMouseDown={e => e.currentTarget.style.transform = 'translateY(-50%) scale(0.85)'}
+                    onMouseUp={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
+                  >›</button>
+
+                  <div style={{
+                    position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
+                    display: 'flex', gap: '6px',
+                  }}>
+                    {featured.map((_, i) => (
+                      <div key={i} onClick={() => goTo(i)} style={{
+                        width: i === current ? '20px' : '6px', height: '3px',
+                        background: i === current ? '#c9a84c' : '#3a3020',
+                        borderRadius: '2px', cursor: 'pointer', transition: 'all 0.3s ease',
+                      }} />
+                    ))}
+                  </div>
                 </div>
 
+                {/* Below visual */}
                 <div style={{
-                  position: 'absolute', top: '16px', left: '16px',
-                  background: '#c9a84c', color: '#0a0a0a',
-                  fontSize: '10px', fontWeight: '700', letterSpacing: '2px',
-                  textTransform: 'uppercase', padding: '4px 10px', borderRadius: '1px',
-                  opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
-                }}>{film.tag}</div>
-
-                <div style={{
-                  position: 'absolute', top: '16px', right: '16px',
-                  fontSize: '11px', letterSpacing: '2px', color: '#5a5040', textTransform: 'uppercase',
-                  opacity: transitioning ? 0 : 1, transition: 'opacity 0.3s ease',
-                }}>{film.country} &middot; {film.type}</div>
-
-                <button onClick={prev} style={{
-                  position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'rgba(10,10,10,0.7)', border: '0.5px solid #2a2418',
-                  color: glowLeft ? '#c9a84c' : '#f0e8d0',
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  cursor: 'pointer', fontSize: '18px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: glowLeft ? '0 0 12px rgba(201,168,76,0.8), 0 0 24px rgba(201,168,76,0.4)' : 'none',
-                  transition: 'box-shadow 0.2s ease, color 0.2s ease, transform 0.1s ease', zIndex: 2,
-                }}
-                  onMouseDown={e => e.currentTarget.style.transform = 'translateY(-50%) scale(0.85)'}
-                  onMouseUp={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                >‹</button>
-
-                <button onClick={next} style={{
-                  position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'rgba(10,10,10,0.7)', border: '0.5px solid #2a2418',
-                  color: glowRight ? '#c9a84c' : '#f0e8d0',
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  cursor: 'pointer', fontSize: '18px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: glowRight ? '0 0 12px rgba(201,168,76,0.8), 0 0 24px rgba(201,168,76,0.4)' : 'none',
-                  transition: 'box-shadow 0.2s ease, color 0.2s ease, transform 0.1s ease', zIndex: 2,
-                }}
-                  onMouseDown={e => e.currentTarget.style.transform = 'translateY(-50%) scale(0.85)'}
-                  onMouseUp={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-                >›</button>
-
-                <div style={{
-                  position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
-                  display: 'flex', gap: '6px',
+                  display: 'flex', alignItems: 'center', gap: '16px', marginTop: '16px',
+                  opacity: transitioning ? 0 : 1,
+                  transform: transitioning ? 'translateY(6px)' : 'translateY(0)',
+                  transition: 'opacity 0.3s ease, transform 0.3s ease',
                 }}>
-                  {FEATURED.map((_, i) => (
-                    <div key={i} onClick={() => goTo(i)} style={{
-                      width: i === current ? '20px' : '6px', height: '3px',
-                      background: i === current ? '#c9a84c' : '#3a3020',
-                      borderRadius: '2px', cursor: 'pointer', transition: 'all 0.3s ease',
-                    }} />
+                  <PosterThumb src={film.poster_file ? `${R2}/${film.poster_file}` : null} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '20px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '1px', marginBottom: '4px' }}>{film.title}</div>
+                    <div style={{ fontSize: '13px', color: '#5a5040', letterSpacing: '1px' }}>{film.subtitle}</div>
+                    <div style={{ fontSize: '11px', color: '#3a3020', letterSpacing: '1px', marginTop: '4px' }}>{film.year}</div>
+                  </div>
+                  <div
+                    onClick={() => window.location.href = `/films/${film.id}`}
+                    style={{
+                      width: '48px', height: '48px', borderRadius: '50%',
+                      border: '0.5px solid #3a3020',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', flexShrink: 0,
+                    }}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="#c9a84c">
+                      <polygon points="4,2 14,8 4,14"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Up next */}
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#c9a84c', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
+                  Up Next
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {featured.map((item, i) => (
+                    <div key={item.id} onClick={() => goTo(i)} style={{
+                      display: 'flex', gap: '12px', alignItems: 'center',
+                      cursor: 'pointer', padding: '8px',
+                      border: `0.5px solid ${i === current ? '#3a3020' : 'transparent'}`,
+                      borderRadius: '2px',
+                      background: i === current ? '#0d0c08' : 'transparent',
+                      transition: 'all 0.2s ease',
+                    }}
+                      onMouseEnter={e => { if (i !== current) e.currentTarget.style.borderColor = '#2a2418'; }}
+                      onMouseLeave={e => { if (i !== current) e.currentTarget.style.borderColor = 'transparent'; }}
+                    >
+                      <div style={{ position: 'relative' }}>
+                        <PosterThumb small src={item.poster_file ? `${R2}/${item.poster_file}` : null} />
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{
+                            width: '28px', height: '28px', borderRadius: '50%',
+                            background: 'rgba(10,10,10,0.7)',
+                            border: `0.5px solid ${i === current ? '#c9a84c' : '#3a3020'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill={i === current ? '#c9a84c' : '#5a5040'}>
+                              <polygon points="4,2 14,8 4,14"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '10px', color: i === current ? '#c9a84c' : '#3a3020', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '3px' }}>{item.tag}</div>
+                        <div style={{ fontSize: '12px', color: i === current ? '#f0e8d0' : '#8a7f6a', fontWeight: i === current ? '600' : '400', lineHeight: '1.3', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                        <div style={{ fontSize: '10px', color: '#3a3020', letterSpacing: '1px' }}>{item.year} &middot; {item.country}</div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
-
-              {/* Below visual */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '16px', marginTop: '16px',
-                opacity: transitioning ? 0 : 1,
-                transform: transitioning ? 'translateY(6px)' : 'translateY(0)',
-                transition: 'opacity 0.3s ease, transform 0.3s ease',
-              }}>
-                <PosterThumb />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '1px', marginBottom: '4px' }}>{film.title}</div>
-                  <div style={{ fontSize: '13px', color: '#5a5040', letterSpacing: '1px' }}>{film.subtitle}</div>
-                  <div style={{ fontSize: '11px', color: '#3a3020', letterSpacing: '1px', marginTop: '4px' }}>{film.duration} &middot; {film.year}</div>
-                </div>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '50%',
-                  border: '0.5px solid #3a3020',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', flexShrink: 0,
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="#c9a84c">
-                    <polygon points="4,2 14,8 4,14"/>
-                  </svg>
-                </div>
-              </div>
             </div>
-
-            {/* Up next — all 5 */}
-            <div>
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#c9a84c', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
-                Up Next
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {FEATURED.map((item, i) => (
-                  <div key={item.id} onClick={() => goTo(i)} style={{
-                    display: 'flex', gap: '12px', alignItems: 'center',
-                    cursor: 'pointer', padding: '8px',
-                    border: `0.5px solid ${i === current ? '#3a3020' : 'transparent'}`,
-                    borderRadius: '2px',
-                    background: i === current ? '#0d0c08' : 'transparent',
-                    transition: 'all 0.2s ease',
-                  }}
-                    onMouseEnter={e => { if (i !== current) e.currentTarget.style.borderColor = '#2a2418'; }}
-                    onMouseLeave={e => { if (i !== current) e.currentTarget.style.borderColor = 'transparent'; }}
-                  >
-                    <div style={{ position: 'relative' }}>
-                      <PosterThumb small />
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{
-                          width: '28px', height: '28px', borderRadius: '50%',
-                          background: 'rgba(10,10,10,0.7)',
-                          border: `0.5px solid ${i === current ? '#c9a84c' : '#3a3020'}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <svg width="10" height="10" viewBox="0 0 16 16" fill={i === current ? '#c9a84c' : '#5a5040'}>
-                            <polygon points="4,2 14,8 4,14"/>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '10px', color: i === current ? '#c9a84c' : '#3a3020', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '3px' }}>{item.tag}</div>
-                      <div style={{ fontSize: '12px', color: i === current ? '#f0e8d0' : '#8a7f6a', fontWeight: i === current ? '600' : '400', lineHeight: '1.3', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
-                      <div style={{ fontSize: '10px', color: '#3a3020', letterSpacing: '1px' }}>{item.duration} &middot; {item.country}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <YourPicks />
         <TopTen />
