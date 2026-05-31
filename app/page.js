@@ -203,7 +203,7 @@ export default function Home() {
     async function fetchFeatured() {
       const { data } = await supabase
         .from('films')
-        .select(`id, title, type, year, trailer_file, poster_file, countries (code), directors (name)`)
+        .select(`id, title, type, year, trailer_file, poster_file, featured_image, countries (code), directors (name)`)
         .eq('status', 'released')
         .order('created_at', { ascending: false })
         .limit(5);
@@ -219,7 +219,7 @@ export default function Home() {
           country: film.countries?.code || '',
           year: film.year,
           type: film.type,
-          poster_file: film.poster_file,
+          featured_image: film.featured_image,
           trailer_file: film.trailer_file,
         }));
         setFeatured(mapped);
@@ -508,8 +508,8 @@ export default function Home() {
                     transform: transitioning ? 'scale(1.02)' : 'scale(1)',
                     transition: 'opacity 0.3s ease, transform 0.3s ease',
                   }}>
-                    {film.poster_file ? (
-                      <img src={`${R2}/${film.poster_file}`} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+                    {(film.featured_image || film.poster_file) ? (
+  <img src={`${R2}/${film.featured_image || film.poster_file}`} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
                     ) : (
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.08 }}>
                         <rect x="2" y="2" width="20" height="20" rx="1" stroke="#c9a84c" strokeWidth="0.5"/>
