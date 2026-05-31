@@ -12,22 +12,27 @@ export default function ComingSoon() {
 
   useEffect(() => {
     async function fetchComingSoon() {
-      const { data, error } = await supabase
-        .from('films')
-        .select(`
-          id,
-          title,
-          type,
-          year,
-          synopsis,
-          release_date,
-          poster_file,
-          genre,
-          countries ( name, code ),
-          directors ( name )
-        `)
-        .eq('status', 'coming_soon')
-        .order('release_date', { ascending: true });
+const { data, error } = await supabase
+  .from('films')
+  .select(`
+    id,
+    title,
+    type,
+    year,
+    synopsis,
+    release_date,
+    poster_file,
+    genre,
+    country_id,
+    director_id,
+    countries ( name, code ),
+    directors ( name )
+  `)
+  .eq('status', 'coming_soon')
+  .order('release_date', { ascending: true });
+
+  console.log('coming soon data:', data);
+console.log('coming soon error:', error);
 
       if (error) {
         console.error('Error fetching coming soon:', error);
