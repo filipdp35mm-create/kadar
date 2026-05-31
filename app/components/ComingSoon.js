@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase';
+import { supabase } from '../lib/supabase';
 
 const R2_URL = process.env.NEXT_PUBLIC_R2_URL;
 
