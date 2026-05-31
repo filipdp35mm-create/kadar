@@ -91,6 +91,7 @@ console.log('coming soon error:', error);
               key={film.id}
               onMouseEnter={() => setHoveredId(film.id)}
               onMouseLeave={() => setHoveredId(null)}
+              onClick={() => window.location.href = `/films/${film.id}`}
               style={{
                 cursor: 'pointer',
                 border: `0.5px solid ${hoveredId === film.id ? '#2a2418' : '#1a1610'}`,
