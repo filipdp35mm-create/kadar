@@ -14,7 +14,7 @@ const COUNTRY_MAP = {
 // AUTH + SUBSCRIPTION POPUP
 // Shown when user can't watch a film
 // ============================================
-function WatchPopup({ type, onClose }) {
+function WatchPopup({ type, onClose, onCloseBrowse }) {
   return (
     <div
       onClick={onClose}
@@ -89,7 +89,7 @@ function WatchPopup({ type, onClose }) {
           {type === 'login' && (
             <>
 <button
-  onClick={() => { window.dispatchEvent(new CustomEvent('open-auth', { detail: 'login' })); }}
+  onClick={() => { onClose(); onCloseBrowse(); window.dispatchEvent(new CustomEvent('open-auth', { detail: 'login' })); }}
   style={{
     background: '#c9a84c', border: 'none', color: '#0a0a0a',
     padding: '11px 28px', fontSize: '11px', fontWeight: '700',
@@ -100,7 +100,7 @@ function WatchPopup({ type, onClose }) {
   onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
 >Sign In</button>
 <button
-  onClick={() => { window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' })); }}
+  onClick={() => { onClose(); onCloseBrowse(); window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' })); }}
   style={{
     background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
     padding: '11px 28px', fontSize: '11px', fontWeight: '500',
@@ -496,7 +496,7 @@ const { data } = await query;
       )}
 
       {/* Auth/subscription popup */}
-      {popup && <WatchPopup type={popup} onClose={() => setPopup(null)} />}
+      {popup && <WatchPopup type={popup} onClose={() => setPopup(null)} onCloseBrowse={handleClose} />}
 
       <style>{`
         @keyframes cardExpand {
