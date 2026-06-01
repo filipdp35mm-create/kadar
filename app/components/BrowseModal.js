@@ -162,33 +162,34 @@ export default function BrowseModal({ onClose, type = 'film', initialCategory = 
   const leaveTimer = useRef(null);
 
   const CATEGORIES = type === 'music_video'
-  ? ['All', 'Hip-Hop', 'Rock', 'Pop', 'EDM', 'Folk', 'Electronic', 'R&B']
+  ? ['All', 'Hip Hop', 'Rock', 'Pop', 'EDM', 'Folk', 'Electronic', 'R&B']
   : ['All', 'Action', 'Comedy', 'Documentary', 'Musical', 'Sci-Fi', 'Animation', 'Crime', 'Drama', 'Thriller', 'Horror', 'Romance'];
 
   useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 150);
     return () => clearTimeout(timer);
-  }, []);
+  }, [type]);
 
   // Load films
   useEffect(() => {
     async function fetchFilms() {
+const table = type === 'music_video' ? 'music_videos' : 'films';
 const query = supabase
-  .from('films')
+  .from(table)
   .select(`*, directors (name), countries (code, name)`);
 
 if (type === 'music_video') {
-  query.eq('type', 'Music Video');
+  query.eq('status', 'released');
 } else {
-  query.eq('status', 'released').neq('type', 'Music Video');
+  query.eq('status', 'released');
 }
 
 const { data } = await query;
       if (data) setFilms(data);
     }
     fetchFilms();
-  }, []);
+  }, [type]);
 
   // Load user + profile
   useEffect(() => {
@@ -205,7 +206,7 @@ const { data } = await query;
       }
     }
     loadUser();
-  }, []);
+    }, [type]);
 
   function isTrialActive(profile) {
     if (!profile) return false;

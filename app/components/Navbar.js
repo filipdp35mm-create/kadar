@@ -108,7 +108,7 @@ useEffect(() => {
     {
       label: 'Music Videos',
       sections: [
-        { heading: 'Genre', items: ['Hip-Hop', 'Rock', 'Pop', 'EDM'] },
+        { heading: 'Genre', items: ['Hip Hop', 'Rock', 'Pop', 'EDM'] },
         { heading: 'Country', items: ['North Macedonia', 'Serbia', 'Bulgaria', 'Albania', 'Greece', 'Bosnia', 'Croatia', 'Kosovo', 'Montenegro', 'Romania', 'Slovenia'] },
         { heading: 'Year', items: ['2021 — 2026', '2011 — 2020', '2000 — 2010'] },
       ],
