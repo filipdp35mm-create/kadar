@@ -341,7 +341,7 @@ export default function Home() {
         opacity: loaded ? 1 : 0, transition: 'opacity 0.8s ease',
       }}>
 
-        {/* Sticky navbar */}
+        {/* Sticky navbar — no modals */}
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
           opacity: scrollY > 80 ? 1 : 0,
@@ -351,11 +351,12 @@ export default function Home() {
           background: 'rgba(10,10,10,0.85)',
           borderBottom: '0.5px solid #2a2418',
         }}>
-          <Navbar />
+          <Navbar noModals />
         </div>
 
-        {/* Static navbar */}
+        {/* Static navbar — handles modals */}
         <Navbar />
+
 
         {/* LEFT film strip */}
         <div style={{
@@ -548,7 +549,7 @@ export default function Home() {
     border: '0.5px solid rgba(255,255,255,0.1)',
   }}>{film.type}</span>
   <span style={{
-    fontSize: '10px', letterSpacing: '2px', color: '#c9a84c', textTransform: 'uppercase',
+    fontSize: '10px', letterSpacing: '2px', color: '#8a7f6a', textTransform: 'uppercase',
     background: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '1px',
     border: '0.5px solid rgba(201,168,76,0.3)',
   }}>{film.year}</span>
@@ -609,7 +610,7 @@ export default function Home() {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '20px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '1px', marginBottom: '4px' }}>{film.title}</div>
                     <div style={{ fontSize: '13px', color: '#5a5040', letterSpacing: '1px' }}>{film.subtitle}</div>
-                    <div style={{ fontSize: '11px', color: '#3a3020', letterSpacing: '1px', marginTop: '4px' }}>{film.year}</div>
+                    <div style={{ fontSize: '11px', color: '#8a7f6a', letterSpacing: '1px', marginTop: '4px' }}>{film.year}</div>
                   </div>
                   <div
                     onClick={() => window.location.href = `/films/${film.id}`}

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import AuthModal from './AuthModal';
+import ProfileModal from './ProfileModal';
+import { createPortal } from 'react-dom';
 
-export default function Navbar() {
+export default function Navbar({ noModals = false }) {
 const [showModal, setShowModal] = useState(false);
 const [modalMode, setModalMode] = useState('login');
 const [user, setUser] = useState(null);
@@ -12,6 +14,7 @@ const [username, setUsername] = useState(null);
 const [hoveredBtn, setHoveredBtn] = useState(null);
 const [dark, setDark] = useState(true);
 const [hoveredNav, setHoveredNav] = useState(null);
+const [showProfile, setShowProfile] = useState(false);
 const COUNTRY_MAP = {
   'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
   'Albania': 'AL', 'Greece': 'GR', 'Bosnia': 'BA',
@@ -35,25 +38,33 @@ useEffect(() => {
     if (session?.user) fetchUsername(session.user.id);
   });
 
-const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-  setUser(session?.user ?? null);
-  if (session?.user) {
-    fetchUsername(session.user.id);
-    setShowModal(false);
-  } else {
-    setUsername(null);
-  }
-});
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null);
+    if (session?.user) {
+      fetchUsername(session.user.id);
+      setShowModal(false);
+    } else {
+      setUsername(null);
+    }
+  });
 
-function handleOpenAuth(e) {
-  setModalMode(e.detail);
-  setShowModal(true);
-}
-window.addEventListener('open-auth', handleOpenAuth);
-return () => {
-  subscription.unsubscribe();
-  window.removeEventListener('open-auth', handleOpenAuth);
-};
+  function handleOpenAuth(e) {
+    setModalMode(e.detail);
+    setShowModal(true);
+  }
+
+  function handleOpenProfile() {
+    setShowProfile(true);
+  }
+
+  window.addEventListener('open-auth', handleOpenAuth);
+  window.addEventListener('open-profile', handleOpenProfile);
+
+  return () => {
+    subscription.unsubscribe();
+    window.removeEventListener('open-auth', handleOpenAuth);
+    window.removeEventListener('open-profile', handleOpenProfile);
+  };
 }, []);
 
   async function handleSignOut() {
@@ -224,10 +235,16 @@ if (section.heading === 'Genre') {
 {user ? (
   // Logged in state
   <>
-<span style={{
-  fontSize: '12px', color: '#c9a84c', letterSpacing: '1px',
-  border: '0.5px solid #2a2418', padding: '6px 12px', borderRadius: '2px',
-}}>
+<span
+  onClick={() => setShowProfile(true)}
+  style={{
+    fontSize: '12px', color: '#c9a84c', letterSpacing: '1px',
+    border: '0.5px solid #2a2418', padding: '6px 12px', borderRadius: '2px',
+    cursor: 'pointer', transition: 'border-color 0.2s ease',
+  }}
+  onMouseEnter={e => e.currentTarget.style.borderColor = '#c9a84c'}
+  onMouseLeave={e => e.currentTarget.style.borderColor = '#2a2418'}
+>
   {username || user.email.split('@')[0]}
 </span>
     <button
@@ -243,6 +260,7 @@ if (section.heading === 'Genre') {
               >
                 Sign Out
               </button>
+              {showProfile && <ProfileModal onClose={() => setShowProfile(false)} user={user} username={username || user.email.split('@')[0]} />}
             </>
           ) : (
             // Logged out state
@@ -283,7 +301,14 @@ if (section.heading === 'Genre') {
         </div>
       </nav>
 
-      {showModal && <AuthModal initialMode={modalMode} onClose={() => setShowModal(false)} />}
+      {!noModals && showModal && createPortal(
+        <AuthModal initialMode={modalMode} onClose={() => setShowModal(false)} />,
+        document.body
+      )}
+      {!noModals && showProfile && user && typeof document !== 'undefined' && createPortal(
+        <ProfileModal onClose={() => setShowProfile(false)} user={user} username={username || user.email.split('@')[0]} />,
+        document.body
+      )}
     </>
   );
 }
