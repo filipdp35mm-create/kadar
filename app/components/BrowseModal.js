@@ -349,17 +349,21 @@ const { data } = await query;
         <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
             {filtered.map((film, index) => (
-              <div
-                key={film.id}
-                onMouseEnter={e => handleEnter(e, film)}
-                onMouseLeave={handleLeave}
-                style={{
-                  cursor: 'pointer',
-                  opacity: mounted ? 1 : 0,
-                  transform: mounted ? 'translateX(0)' : 'translateX(24px)',
-                  transition: `opacity 0.5s ease ${index * 0.06}s, transform 0.5s ease ${index * 0.06}s`,
-                }}
-              >
+<div
+  key={film.id}
+  onMouseEnter={e => handleEnter(e, film)}
+  onMouseLeave={handleLeave}
+onClick={() => {
+  const route = type === 'music_video' ? 'music-videos' : 'films';
+  window.location.href = `/${route}/${film.id}`;
+}}
+  style={{
+    cursor: 'pointer',
+    opacity: mounted ? 1 : 0,
+    transform: mounted ? 'translateX(0)' : 'translateX(24px)',
+    transition: `opacity 0.5s ease ${index * 0.06}s, transform 0.5s ease ${index * 0.06}s`,
+  }}
+>
                 <div style={{
                   width: '100%', aspectRatio: '2/3', background: '#0d0c08',
                   border: `0.5px solid ${hoveredId === film.id ? '#c9a84c' : '#2a2418'}`,
@@ -479,8 +483,11 @@ const { data } = await query;
               {playLabel()}
             </button>
 
-            <div
-              onClick={() => window.location.href = `/films/${hoveredFilm.id}`}
+<div
+onClick={() => {
+  const route = type === 'music_video' ? 'music-videos' : 'films';
+  window.location.href = `/${route}/${hoveredFilm.id}`;
+}}
               style={{
                 marginTop: '10px', textAlign: 'center',
                 fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase',
