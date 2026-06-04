@@ -31,24 +31,31 @@ function WatchPopup({ type, onClose }) {
           border: '0.5px solid #c9a84c', margin: '0 auto 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          {type === 'login' ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="4" stroke="#c9a84c" strokeWidth="1.5"/>
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="#c9a84c">
-              <polygon points="4,2 14,8 4,14"/>
-            </svg>
-          )}
+{type === 'login' ? (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="8" r="4" stroke="#c9a84c" strokeWidth="1.5"/>
+    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c9a84c" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+) : type === 'link_card' ? (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="5" width="20" height="14" rx="2" stroke="#c9a84c" strokeWidth="1.5"/>
+    <line x1="2" y1="10" x2="22" y2="10" stroke="#c9a84c" strokeWidth="1.5"/>
+  </svg>
+) : (
+  <svg width="20" height="20" viewBox="0 0 16 16" fill="#c9a84c">
+    <polygon points="4,2 14,8 4,14"/>
+  </svg>
+)}
         </div>
         <div style={{ fontSize: '18px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '0.5px', marginBottom: '12px' }}>
-          {type === 'login' && 'Sign in to Watch'}
-          {type === 'subscribe' && 'Subscribe to Watch'}
+{type === 'login' && 'Sign in to Watch'}
+{type === 'link_card' && 'Link a Card to Continue'}
+{type === 'subscribe' && 'Subscribe to Watch'}
         </div>
         <p style={{ fontSize: '13px', color: '#8a7f6a', lineHeight: '1.8', letterSpacing: '0.3px', marginBottom: '28px' }}>
-          {type === 'login' && 'Create a free account or sign in to access Кадар. Your first 30 days are free.'}
-          {type === 'subscribe' && 'Your free trial has ended. Subscribe to continue watching.'}
+{type === 'login' && 'Create a free account or sign in to access Кадар. Your first 30 days are free.'}
+{type === 'link_card' && "Link a payment card to activate your free 30-day trial. You won't be charged during the trial period."}
+{type === 'subscribe' && 'Your free trial has ended. Subscribe to continue watching.'}
         </p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
           {type === 'login' && (
@@ -65,6 +72,13 @@ function WatchPopup({ type, onClose }) {
               >Create Account</button>
             </>
           )}
+          {type === 'link_card' && (
+  <button onClick={() => window.location.href = '/account/billing'}
+    style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '11px 28px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+    onMouseEnter={e => e.currentTarget.style.background = '#fff7e0'}
+    onMouseLeave={e => e.currentTarget.style.background = '#c9a84c'}
+  >Link Card</button>
+)}
           {type === 'subscribe' && (
             <button onClick={() => window.location.href = '/account/billing'}
               style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '11px 28px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
@@ -484,34 +498,29 @@ export default function MusicVideoPage() {
         </div>
       </section>
 
-      {/* ── VIDEO SECTION ── */}
-      <section style={{ padding: '80px', position: 'relative', maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ height: '0.5px', background: '#1a1610', marginBottom: '60px' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
-          <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#8a7f6a', fontWeight: '500', whiteSpace: 'nowrap' }}>
-            {isWatching ? 'Now Playing' : 'Music Video'}
-          </span>
-          <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
-        </div>
-
-        {mv.trailer_file ? (
-          <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-            <div ref={glowRef} style={{
-              position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)',
-              width: '120%', height: '140%',
-              background: `radial-gradient(ellipse, rgba(${mv.ambient_color || '80,80,80'},0.5) 0%, transparent 60%)`,
-              filter: 'blur(90px)', pointerEvents: 'none', zIndex: 0,
-            }} />
-            <div style={{ position: 'relative', width: '75%', aspectRatio: '16/9', borderRadius: '3px', overflow: 'hidden', border: '0.5px solid #2a2418', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', zIndex: 1 }}>
-              <VideoPlayer src={`${R2}/${mv.trailer_file}`} muted={muted} onToggleMute={toggleMute} videoRef={videoRef} />
-            </div>
-          </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '60px', border: '0.5px solid #1a1610', borderRadius: '2px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#3a3020', textTransform: 'uppercase' }}>No Video Available</div>
-          </div>
-        )}
-      </section>
+{/* ── VIDEO SECTION — only shown after clicking Watch ── */}
+{isWatching && mv.trailer_file && (
+  <section style={{ padding: '80px', position: 'relative', maxWidth: '1400px', margin: '0 auto' }}>
+    <div style={{ height: '0.5px', background: '#1a1610', marginBottom: '60px' }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+      <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#8a7f6a', fontWeight: '500', whiteSpace: 'nowrap' }}>
+        Now Playing
+      </span>
+      <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
+    </div>
+    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+      <div ref={glowRef} style={{
+        position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)',
+        width: '120%', height: '140%',
+        background: `radial-gradient(ellipse, rgba(${mv.ambient_color || '80,80,80'},0.5) 0%, transparent 60%)`,
+        filter: 'blur(90px)', pointerEvents: 'none', zIndex: 0,
+      }} />
+      <div style={{ position: 'relative', width: '75%', aspectRatio: '16/9', borderRadius: '3px', overflow: 'hidden', border: '0.5px solid #2a2418', boxShadow: '0 32px 80px rgba(0,0,0,0.8)', zIndex: 1 }}>
+        <VideoPlayer src={`${R2}/${mv.trailer_file}`} muted={muted} onToggleMute={toggleMute} videoRef={videoRef} />
+      </div>
+    </div>
+  </section>
+)}
 
       {/* ── FESTIVALS & AWARDS ── */}
       {(mv.festivals || mv.awards) && (
