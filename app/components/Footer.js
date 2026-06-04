@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
+
+const BrowseModal = dynamic(() => import('./BrowseModal'), { ssr: false });
 
 export default function Footer() {
   const [hoveredLink, setHoveredLink] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [browseModal, setBrowseModal] = useState(null); // null | 'film' | 'music_video'
   const footerRef = useRef(null);
 
   // Trigger animation when footer enters viewport
@@ -16,6 +20,16 @@ export default function Footer() {
     if (footerRef.current) observer.observe(footerRef.current);
     return () => observer.disconnect();
   }, []);
+
+  const handleLinkClick = (link) => {
+    if (link === 'Browse Films') {
+      setBrowseModal('film');
+    } else if (link === 'Music Videos') {
+      setBrowseModal('music_video');
+    } else if (link === 'Pricing') {
+      window.location.href = '/pricing';
+    }
+  };
 
   const columns = [
     {
@@ -36,8 +50,19 @@ export default function Footer() {
     },
   ];
 
+  // Links that are wired up (clickable)
+  const wiredLinks = new Set(['Browse Films', 'Music Videos', 'Pricing']);
+
   return (
     <div style={{ overflow: 'hidden' }}>
+      {/* Browse Modal */}
+      {browseModal && (
+        <BrowseModal
+          onClose={() => setBrowseModal(null)}
+          type={browseModal}
+        />
+      )}
+
     <footer
       ref={footerRef}
       style={{
@@ -106,33 +131,38 @@ export default function Footer() {
               {col.title}
             </div>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {col.links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    onMouseEnter={() => setHoveredLink(link)}
-                    onMouseLeave={() => setHoveredLink(null)}
-                    style={{
-                      fontSize: '13px',
-                      color: hoveredLink === link ? '#f0e8d0' : '#8a7f6a',
-                      textDecoration: 'none',
-                      letterSpacing: '0.5px',
-                      transition: 'color 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
-                  >
-                    {hoveredLink === link && (
-                      <span style={{
-                        display: 'inline-block', width: '12px', height: '0.5px',
-                        background: '#c9a84c', flexShrink: 0,
-                      }} />
-                    )}
-                    {link}
-                  </a>
-                </li>
-              ))}
+              {col.links.map((link) => {
+                const isWired = wiredLinks.has(link);
+                return (
+                  <li key={link}>
+                    <a
+                      href={link === 'Pricing' ? '/pricing' : '#'}
+                      onClick={isWired && link !== 'Pricing' ? (e) => { e.preventDefault(); handleLinkClick(link); } : undefined}
+                      onMouseEnter={() => setHoveredLink(link)}
+                      onMouseLeave={() => setHoveredLink(null)}
+                      style={{
+                        fontSize: '13px',
+                        color: hoveredLink === link ? '#f0e8d0' : '#8a7f6a',
+                        textDecoration: 'none',
+                        letterSpacing: '0.5px',
+                        transition: 'color 0.2s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        cursor: isWired ? 'pointer' : 'default',
+                      }}
+                    >
+                      {hoveredLink === link && (
+                        <span style={{
+                          display: 'inline-block', width: '12px', height: '0.5px',
+                          background: '#c9a84c', flexShrink: 0,
+                        }} />
+                      )}
+                      {link}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
