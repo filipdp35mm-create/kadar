@@ -1,93 +1,77 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import AuthModal from '../components/AuthModal'; // adjust path to match your project
 
 const plans = [
   {
     id: 'free',
-    label: 'Archive',
-    price: { monthly: 0, yearly: 0 },
-    description: 'Explore the catalogue. No card required.',
-    cta: 'Start Free',
+    label: 'Free',
+    price: { monthly: 0 },
+    description: 'Browse the archive and catch films in free rotation.',
+    note: 'Card required to create account.',
+    cta: 'Create Account',
     ctaHref: '/signup',
     accent: '#3a3020',
     accentText: '#8a7f6a',
     features: [
       { text: 'Browse full catalogue', included: true },
       { text: 'Watch trailers & previews', included: true },
-      { text: 'Director profiles', included: true },
       { text: 'Festival listings', included: true },
-      { text: 'Full film access', included: false },
-      { text: 'Music video library', included: false },
-      { text: 'Early access releases', included: false },
-      { text: 'Offline downloads', included: false },
+      { text: 'Apply for attending festivals', included: true },
+      { text: 'Watch free films (weekly rotation)', included: true },
+      { text: 'Watch all films on the platform', included: false },
+      { text: 'Watch music videos', included: false },
     ],
   },
   {
-    id: 'standard',
-    label: 'Screening',
-    price: { monthly: 5.99, yearly: 4.49 },
-    description: 'Full access to films and music videos.',
-    cta: 'Start 30-Day Trial',
-    ctaHref: '/signup?plan=screening',
+    id: 'cinema',
+    label: 'Cinema',
+    price: { monthly: 4.07 },
+    priceMKD: 250,
+    description: 'Full access to every film and music video on the platform.',
+    cta: 'Subscribe',
+    ctaHref: '/signup?plan=cinema',
     accent: '#c9a84c',
     accentText: '#c9a84c',
     featured: true,
     features: [
       { text: 'Browse full catalogue', included: true },
       { text: 'Watch trailers & previews', included: true },
-      { text: 'Director profiles', included: true },
       { text: 'Festival listings', included: true },
-      { text: 'Full film access', included: true },
-      { text: 'Music video library', included: true },
-      { text: 'Early access releases', included: false },
-      { text: 'Offline downloads', included: false },
-    ],
-  },
-  {
-    id: 'pro',
-    label: 'Auteur',
-    price: { monthly: 11.99, yearly: 8.99 },
-    description: 'Everything, plus early access and downloads.',
-    cta: 'Start 30-Day Trial',
-    ctaHref: '/signup?plan=auteur',
-    accent: '#dac8a7',
-    accentText: '#dac8a7',
-    features: [
-      { text: 'Browse full catalogue', included: true },
-      { text: 'Watch trailers & previews', included: true },
-      { text: 'Director profiles', included: true },
-      { text: 'Festival listings', included: true },
-      { text: 'Full film access', included: true },
-      { text: 'Music video library', included: true },
-      { text: 'Early access releases', included: true },
-      { text: 'Offline downloads', included: true },
+      { text: 'Apply for attending festivals', included: true },
+      { text: 'Watch free films (weekly rotation)', included: true },
+      { text: 'Watch all films on the platform', included: true },
+      { text: 'Watch music videos', included: true },
     ],
   },
 ];
 
 const faqs = [
   {
-    q: 'Is the free trial really free?',
-    a: 'Yes. Your first 30 days on any paid plan are completely free. We require a card to start the trial, but you won\'t be charged until the trial ends. Cancel any time before that.',
-  },
-  {
     q: 'What films are on Кадар?',
     a: 'We curate short films and music videos from North Macedonia, Serbia, Croatia, Bulgaria, Greece, Bosnia, Kosovo, Montenegro, Romania, Albania, and Slovenia. New titles are added weekly.',
   },
   {
-    q: 'Can I cancel at any time?',
-    a: 'Absolutely. No lock-ins, no cancellation fees. Your access continues until the end of the billing period.',
+    q: 'What are the free rotation films?',
+    a: 'Each week a selection of films is made available to all users at no cost. The rotation changes weekly — a great way to discover the catalogue before subscribing to Cinema.',
   },
   {
-    q: 'Do you support annual billing?',
-    a: 'Yes — switch to annual billing and save around 25% compared to monthly. You can toggle between billing cycles on your account page.',
+    q: 'Can I cancel my Cinema subscription at any time?',
+    a: 'Absolutely. No lock-ins, no cancellation fees. Your access continues until the end of the current billing period.',
   },
   {
-    q: 'I\'m a director. Can I submit films?',
-    a: 'Yes. Head to the Directors section and create an account. Submission guidelines and pricing for distribution are listed there.',
+    q: 'Why is a card required for the free plan?',
+    a: 'A payment method is required to verify your account and enable festival applications. You will not be charged anything on the free plan.',
   },
-  
+  {
+    q: 'I\'m a director. What does it cost to list my film?',
+    a: 'Directors pay a standard monthly listing fee of 600 MKD (~€9.75) per film or music video. The first month is discounted to 300 MKD (~€4.88). If a payment is more than 30 days overdue, the film will be removed from the platform until the outstanding balance is settled.',
+  },
+  {
+    q: 'I\'m a director. How do I submit a film?',
+    a: 'Head to the Directors section and create an account. Submission guidelines and the full distribution terms are listed there. For any questions, reach us at office@filipdimitrievski.com.',
+  },
 ];
 
 function CheckIcon({ color = '#c9a84c' }) {
@@ -134,7 +118,7 @@ function FaqItem({ q, a }) {
         }}>+</span>
       </button>
       <div style={{
-        maxHeight: open ? '200px' : '0',
+        maxHeight: open ? '320px' : '0',
         overflow: 'hidden',
         transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
@@ -148,9 +132,9 @@ function FaqItem({ q, a }) {
 }
 
 export default function PricingPage() {
-  const [billing, setBilling] = useState('monthly'); // 'monthly' | 'yearly'
   const [visible, setVisible] = useState(false);
   const [hoveredPlan, setHoveredPlan] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -181,6 +165,7 @@ export default function PricingPage() {
         pointerEvents: 'none',
       }} />
 
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} initialMode="signup" />}
       <div style={{ position: 'relative', zIndex: 1 }}>
 
         {/* Back nav */}
@@ -195,7 +180,7 @@ export default function PricingPage() {
             onMouseEnter={e => e.currentTarget.style.color = '#c9a84c'}
             onMouseLeave={e => e.currentTarget.style.color = '#5a5040'}
           >
-            <span style={{ fontSize: '14px' }}>←</span> Кадар
+            <span style={{ fontSize: '14px' }}>←</span> Return
           </a>
         </div>
 
@@ -234,50 +219,19 @@ export default function PricingPage() {
             Start free, upgrade when you're ready.
           </p>
 
-          {/* Billing toggle */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0',
-            border: '0.5px solid #2a2418', borderRadius: '2px', marginTop: '40px',
-            overflow: 'hidden',
-          }}>
-            {['monthly', 'yearly'].map((b) => (
-              <button
-                key={b}
-                onClick={() => setBilling(b)}
-                style={{
-                  background: billing === b ? '#1a1610' : 'none',
-                  border: 'none',
-                  color: billing === b ? '#f0e8d0' : '#5a5040',
-                  padding: '9px 20px',
-                  fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase',
-                  cursor: 'pointer', transition: 'all 0.2s ease',
-                  fontFamily: 'sans-serif',
-                }}
-              >
-                {b}
-                {b === 'yearly' && (
-                  <span style={{
-                    marginLeft: '8px', fontSize: '8px', letterSpacing: '1.5px',
-                    color: billing === 'yearly' ? '#c9a84c' : '#3a3020',
-                    border: `0.5px solid ${billing === 'yearly' ? '#c9a84c' : '#3a3020'}`,
-                    padding: '1px 5px', borderRadius: '1px',
-                  }}>−25%</span>
-                )}
-              </button>
-            ))}
-          </div>
         </header>
 
         {/* Plans grid */}
         <section style={{ padding: '0 80px 80px' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '1px',
             border: '0.5px solid #1a1610',
             borderRadius: '3px',
             overflow: 'hidden',
             background: '#1a1610',
+            maxWidth: '860px',
           }}>
             {plans.map((plan, i) => (
               <div
@@ -330,34 +284,38 @@ export default function PricingPage() {
                       Free
                     </span>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                      <span style={{ fontSize: '13px', color: '#5a5040', alignSelf: 'flex-start', marginTop: '8px' }}>€</span>
-                      <span style={{ fontSize: '40px', fontWeight: '300', color: '#f0e8d0', letterSpacing: '-1px' }}>
-                        {billing === 'yearly'
-                          ? plan.price.yearly.toFixed(2)
-                          : plan.price.monthly.toFixed(2)}
-                      </span>
-                      <span style={{ fontSize: '11px', color: '#5a5040', letterSpacing: '1px' }}>/mo</span>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                        <span style={{ fontSize: '40px', fontWeight: '300', color: '#f0e8d0', letterSpacing: '-1px' }}>
+                          {plan.priceMKD}
+                        </span>
+                        <span style={{ fontSize: '13px', color: '#8a7f6a', letterSpacing: '1px' }}>MKD / mo</span>
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#5a5040', letterSpacing: '0.5px', marginTop: '4px', fontFamily: 'sans-serif' }}>
+                        ≈ €{plan.price.monthly.toFixed(2)} / mo
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {billing === 'yearly' && plan.price.monthly > 0 && (
-                  <div style={{
-                    fontSize: '10px', color: '#5a5040', letterSpacing: '1px',
-                    marginBottom: '4px', textDecoration: 'line-through',
-                    fontFamily: 'sans-serif',
-                  }}>
-                    €{plan.price.monthly.toFixed(2)}/mo billed monthly
-                  </div>
-                )}
-
                 <p style={{
                   fontSize: '12px', color: '#8a7f6a', lineHeight: '1.7',
-                  letterSpacing: '0.3px', margin: '12px 0 32px',
+                  letterSpacing: '0.3px', margin: '12px 0 4px',
                 }}>
                   {plan.description}
                 </p>
+
+                {plan.note && (
+                  <p style={{
+                    fontSize: '10px', color: '#5a5040', letterSpacing: '1px',
+                    fontFamily: 'sans-serif', textTransform: 'uppercase',
+                    margin: '0 0 28px', display: 'flex', alignItems: 'center', gap: '6px',
+                  }}>
+                    <span style={{ color: '#c9a84c', fontSize: '12px' }}>*</span>
+                    {plan.note}
+                  </p>
+                )}
+                {!plan.note && <div style={{ marginBottom: '28px' }} />}
 
                 {/* Features */}
                 <ul style={{
@@ -382,7 +340,8 @@ export default function PricingPage() {
 
                 {/* CTA */}
                 <a
-                  href={plan.ctaHref}
+                  href={plan.id === 'free' ? '#' : plan.ctaHref}
+                  onClick={plan.id === 'free' ? (e) => { e.preventDefault(); setShowAuth(true); } : undefined}
                   style={{
                     display: 'block', marginTop: '36px',
                     background: plan.featured ? '#c9a84c' : 'none',
@@ -417,16 +376,6 @@ export default function PricingPage() {
                 >
                   {plan.cta}
                 </a>
-
-                {plan.price.monthly > 0 && (
-                  <p style={{
-                    fontSize: '10px', color: '#3a3020', textAlign: 'center',
-                    marginTop: '12px', letterSpacing: '0.5px',
-                    fontFamily: 'sans-serif',
-                  }}>
-                    No charge during trial
-                  </p>
-                )}
               </div>
             ))}
           </div>
@@ -472,7 +421,7 @@ export default function PricingPage() {
               letterSpacing: '0.3px', marginTop: '16px',
             }}>
               Can't find an answer?{' '}
-              <a href="/contact" style={{ color: '#8a7f6a', textDecoration: 'none' }}
+              <a href="mailto:office@filipdimitrievski.com" style={{ color: '#8a7f6a', textDecoration: 'none' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#c9a84c'}
                 onMouseLeave={e => e.currentTarget.style.color = '#8a7f6a'}
               >Contact us</a>
