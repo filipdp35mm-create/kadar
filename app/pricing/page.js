@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import AuthModal from '../components/AuthModal'; // adjust path to match your project
+import { supabase } from '../lib/supabase'; // adjust path if needed
 
 const plans = [
   {
@@ -135,10 +136,12 @@ export default function PricingPage() {
   const [visible, setVisible] = useState(false);
   const [hoveredPlan, setHoveredPlan] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [user, setUser] = useState(null);
   const heroRef = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 80);
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     return () => clearTimeout(t);
   }, []);
 
@@ -341,12 +344,14 @@ export default function PricingPage() {
                 {/* CTA */}
                 <a
                   href={plan.id === 'free' ? '#' : plan.ctaHref}
-                  onClick={plan.id === 'free' ? (e) => { e.preventDefault(); setShowAuth(true); } : undefined}
+                  onClick={plan.id === 'free' && !user ? (e) => { e.preventDefault(); setShowAuth(true); } : (e) => e.preventDefault()}
                   style={{
                     display: 'block', marginTop: '36px',
                     background: plan.featured ? '#c9a84c' : 'none',
-                    border: `0.5px solid ${plan.featured ? '#c9a84c' : '#2a2418'}`,
-                    color: plan.featured ? '#0a0a0a' : '#8a7f6a',
+                    border: `0.5px solid ${plan.id === 'free' && user ? '#1a1610' : plan.featured ? '#c9a84c' : '#2a2418'}`,
+                    color: plan.id === 'free' && user ? '#3a3020' : plan.featured ? '#0a0a0a' : '#8a7f6a',
+                    cursor: plan.id === 'free' && user ? 'default' : 'pointer',
+                    pointerEvents: plan.id === 'free' && user ? 'none' : 'auto',
                     padding: '13px 24px',
                     fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase',
                     textDecoration: 'none', textAlign: 'center',
@@ -374,7 +379,7 @@ export default function PricingPage() {
                     }
                   }}
                 >
-                  {plan.cta}
+                  {plan.id === 'free' && user ? 'Watching as Free' : plan.cta}
                 </a>
               </div>
             ))}
