@@ -457,7 +457,7 @@ export default function Home() {
                 onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; e.currentTarget.style.boxShadow = 'none'; }}
               >Browse Films</button>
 
-              <button style={{
+              <button onClick={() => window.location.href = '/directors'} style={{
                 background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
                 padding: '12px 28px', fontSize: '13px', fontWeight: '500',
                 letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',

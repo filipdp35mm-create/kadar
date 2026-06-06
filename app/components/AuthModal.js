@@ -18,9 +18,17 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
     setSuccess(null);
 
     if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message);
-      else { onClose(); }
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { setError(error.message); }
+      else {
+        const { data: dirProfile } = await supabase
+          .from('director_profiles')
+          .select('id')
+          .eq('id', signInData.user.id)
+          .single();
+        if (dirProfile) window.location.href = '/directors/dashboard';
+        else onClose();
+      }
 
 } else {
   const { data, error } = await supabase.auth.signUp({ 

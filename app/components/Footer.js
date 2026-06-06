@@ -51,7 +51,8 @@ export default function Footer() {
   ];
 
   // Links that are wired up (clickable)
-  const wiredLinks = new Set(['Browse Films', 'Music Videos', 'Pricing']);
+  const wiredLinks = new Set(['Browse Films', 'Music Videos', 'Pricing', 'Submit a Film', 'Who We Are', 'Our Projects', 'Press', 'Contact']);
+
 
   return (
     <div style={{ overflow: 'hidden' }}>
@@ -136,8 +137,16 @@ export default function Footer() {
                 return (
                   <li key={link}>
                     <a
-                      href={link === 'Pricing' ? '/pricing' : '#'}
-                      onClick={isWired && link !== 'Pricing' ? (e) => { e.preventDefault(); handleLinkClick(link); } : undefined}
+                      href={
+                        link === 'Pricing' ? '/pricing' :
+                        link === 'Submit a Film' ? '/directors' :
+                        link === 'Who We Are' ? '/about#who-we-are' :
+                        link === 'Our Projects' ? '/about#our-projects' :
+                        link === 'Press' ? '/about#press' :
+                        link === 'Contact' ? '/about#contact' :
+                        '#'
+                      }
+                      onClick={isWired && !['Pricing','Who We Are','Our Projects','Press','Contact'].includes(link) ? (e) => { e.preventDefault(); handleLinkClick(link); } : undefined}
                       onMouseEnter={() => setHoveredLink(link)}
                       onMouseLeave={() => setHoveredLink(null)}
                       style={{
