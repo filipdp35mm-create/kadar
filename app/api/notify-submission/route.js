@@ -5,7 +5,7 @@ export async function POST(req) {
   try {
     const { fullName, company, country, phone, imdb, previousWork, note, email } = await req.json();
     await resend.emails.send({
-      from: 'Кадар <noreply@kadar-six.vercel.app>',
+      from: 'Кадар <onboarding@resend.dev>',
       to: 'office@filipdimitrievski.com',
       subject: `Director Verification Request — ${fullName}`,
       html: `
