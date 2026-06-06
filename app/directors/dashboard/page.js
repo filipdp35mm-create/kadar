@@ -295,7 +295,7 @@ export default function DirectorsDashboard() {
     if (error) { setVerifError(error.message); setVerifying(false); return; }
 
     try {
-      await fetch('/api/notify-verification', {
+      await fetch('/api/notify-submission', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
