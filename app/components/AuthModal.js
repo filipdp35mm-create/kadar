@@ -20,7 +20,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
     if (mode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
-      else onClose();
+      else { onClose(); }
 
 } else {
   const { data, error } = await supabase.auth.signUp({ 
@@ -33,7 +33,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
   if (error) {
     setError(error.message);
   } else {
-    setSuccess('Check your email to confirm your account.');
+    setSuccess('Check your email to confirm your account. Then come back here to subscribe.');
   }
 }
 

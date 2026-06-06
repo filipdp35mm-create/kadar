@@ -10,7 +10,7 @@ const plans = [
     label: 'Free',
     price: { monthly: 0 },
     description: 'Browse the archive and catch films in free rotation.',
-    note: 'Card required to create account.',
+    note: 'No card needed.',
     cta: 'Create Account',
     ctaHref: '/signup',
     accent: '#3a3020',
@@ -168,7 +168,7 @@ export default function PricingPage() {
         pointerEvents: 'none',
       }} />
 
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} initialMode="signup" />}
+      {showAuth && <AuthModal onClose={() => { setShowAuth(false); supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null)); }} initialMode="signup" />}
       <div style={{ position: 'relative', zIndex: 1 }}>
 
         {/* Back nav */}
@@ -343,8 +343,12 @@ export default function PricingPage() {
 
                 {/* CTA */}
                 <a
-                  href={plan.id === 'free' ? '#' : plan.ctaHref}
-                  onClick={plan.id === 'free' && !user ? (e) => { e.preventDefault(); setShowAuth(true); } : (e) => e.preventDefault()}
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (plan.id === 'free' && !user) setShowAuth(true);
+                    if (plan.id === 'cinema' && !user) setShowAuth(true);
+                  }}
                   style={{
                     display: 'block', marginTop: '36px',
                     background: plan.featured ? '#c9a84c' : 'none',
@@ -380,6 +384,11 @@ export default function PricingPage() {
                   }}
                 >
                   {plan.id === 'free' && user ? 'Watching as Free' : plan.cta}
+                  {plan.id === 'cinema' && !user && (
+                    <span style={{ display: 'block', fontSize: '9px', letterSpacing: '1.5px', marginTop: '4px', fontWeight: '400', opacity: 0.7 }}>
+                      Create account first
+                    </span>
+                  )}
                 </a>
               </div>
             ))}
