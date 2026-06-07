@@ -500,7 +500,7 @@ borderRadius: '2px', transition: 'all 0.15s ease', whiteSpace: 'nowrap',
               <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+            <div className="featured-grid">
 
               {/* Main visual */}
               <div>

@@ -17,15 +17,12 @@ html {
   overflow-x: hidden;
 }
 
-.scroll-blur {
-  transition: filter 0.15s ease;
-}
-
-.scroll-blur.scrolling {
-  filter: blur(1.5px);
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
 }
 
 @media (max-width: 768px) {
-  .film-strip { display: none !important; }
-  .poster-strip { display: none !important; }
+  .featured-grid { grid-template-columns: 1fr; }
 }
