@@ -70,7 +70,7 @@ export default function YourPicks() {
 
       {/* Section header */}
       <div style={{
-        padding: '0 80px', marginBottom: '24px',
+        padding: '0 clamp(16px, 8vw, 80px)', marginBottom: '24px',
         display: 'flex', alignItems: 'center', gap: '16px',
       }}>
         <span style={{
@@ -98,37 +98,38 @@ export default function YourPicks() {
       {/* NOT LOGGED IN */}
       {!user && (
         <div style={{
-          margin: '0 80px', border: '0.5px solid #1a1610', borderRadius: '2px',
-          padding: '48px 40px', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', background: '#0d0c08', gap: '40px',
+          margin: '0 clamp(16px, 8vw, 80px)', border: '0.5px solid #1a1610', borderRadius: '2px',
+          padding: 'clamp(24px, 5vw, 48px) clamp(16px, 5vw, 40px)', 
+          display: 'flex', alignItems: 'center', flexWrap: 'wrap',
+          justifyContent: 'center', background: '#0d0c08', gap: '24px',
         }}>
-          <div style={{ display: 'flex', gap: '10px', flex: 1, filter: 'blur(3px)', opacity: 0.3, pointerEvents: 'none', overflow: 'hidden' }}>
+          <div className="picks-blur" style={{ display: 'flex', gap: '10px', flex: 1, filter: 'blur(3px)', opacity: 0.3, pointerEvents: 'none', overflow: 'hidden' }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: '80px', height: '120px', flexShrink: 0, background: '#161208', border: '0.5px solid #2a2418', borderRadius: '2px' }} />)}
           </div>
 
           <div style={{ textAlign: 'center', flexShrink: 0 }}>
-            <div style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: '#c9a84c', marginBottom: '12px', fontWeight: '500' }}>Your Picks</div>
-            <div style={{ fontSize: '20px', fontWeight: '700', color: '#f0e8d0', letterSpacing: '1px', marginBottom: '10px', fontFamily: 'sans-serif' }}>Sign in to access Your Picks</div>
-            <p style={{ fontSize: '13px', color: '#5a5040', lineHeight: '1.7', maxWidth: '300px', margin: '0 auto 24px', letterSpacing: '0.3px' }}>
+            <div style={{ fontSize: 'clamp(9px, 1.5vw, 11px)', letterSpacing: '3px', textTransform: 'uppercase', color: '#c9a84c', marginBottom: '12px', fontWeight: '500' }}>Your Picks</div>
+            <div style={{ fontSize: 'clamp(14px, 4vw, 20px)', letterSpacing: '1px', marginBottom: '10px', fontFamily: 'sans-serif' }}>Sign in to access Your Picks</div>
+            <p style={{ fontSize: 'clamp(11px, 2vw, 13px)', lineHeight: '1.7', maxWidth: '300px', margin: '0 auto 24px', letterSpacing: '0.3px' }}>
               Save films and music videos to keep track of what you want to watch.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('open-auth', { detail: 'login' }))}
-                style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: '10px 24px', fontSize: '12px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+                style={{ background: '#c9a84c', border: 'none', color: '#0a0a0a', padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 24px)', fontSize: 'clamp(10px, 1.5vw, 12px)', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#fff7e0'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; }}
               >Sign In</button>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' }))}
-                style={{ background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a', padding: '10px 24px', fontSize: '12px', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
+                style={{ background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a', padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 24px)', fontSize: 'clamp(10px, 1.5vw, 12px)', letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#f0e8d0'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; }}
               >Create Account</button>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', flex: 1, filter: 'blur(3px)', opacity: 0.3, pointerEvents: 'none', overflow: 'hidden', justifyContent: 'flex-end' }}>
+          <div className="picks-blur" style={{ display: 'flex', gap: '10px', flex: 1, filter: 'blur(3px)', opacity: 0.3, pointerEvents: 'none', overflow: 'hidden', justifyContent: 'flex-end' }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: '80px', height: '120px', flexShrink: 0, background: '#161208', border: '0.5px solid #2a2418', borderRadius: '2px' }} />)}
           </div>
         </div>
@@ -137,7 +138,7 @@ export default function YourPicks() {
       {/* LOGGED IN — empty state */}
       {user && picks.length === 0 && (
         <div style={{
-          margin: '0 80px', border: '0.5px solid #1a1610', borderRadius: '2px',
+          margin: '0 clamp(16px, 8vw, 80px)', border: '0.5px solid #1a1610', borderRadius: '2px',
           padding: '48px 40px', textAlign: 'center', background: '#0d0c08',
         }}>
           <div style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: '#3a3020', marginBottom: '12px' }}>No picks yet</div>
@@ -169,7 +170,7 @@ export default function YourPicks() {
               onMouseEnter={() => setHoveredId(film.id)}
               onMouseLeave={() => setHoveredId(null)}
               style={{
-                flexShrink: 0, width: '140px', cursor: 'pointer',
+                flexShrink: 0, width: 'clamp(100px, 30vw, 140px)', cursor: 'pointer',
                 transition: 'transform 0.2s ease',
                 transform: hoveredId === film.id ? 'translateY(-6px)' : 'translateY(0)',
               }}

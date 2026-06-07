@@ -46,12 +46,12 @@ console.log('coming soon error:', error);
   }, []);
 
   if (loading) return (
-    <section style={{ padding: '0 80px 80px' }}>
+    <section style={{ padding: '0 clamp(16px, 8vw, 80px) 80px', }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
         <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#8a7f6a', fontWeight: '500', whiteSpace: 'nowrap' }}>Coming Soon</span>
         <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{ border: '0.5px solid #1a1610', borderRadius: '2px', overflow: 'hidden', background: '#0d0c08' }}>
             <div style={{ width: '100%', aspectRatio: '16/9', background: '#080806' }} />
@@ -68,7 +68,7 @@ console.log('coming soon error:', error);
   if (films.length === 0) return null;
 
   return (
-    <section style={{ padding: '0 80px 80px' }}>
+    <section style={{ padding: '0 clamp(16px, 8vw, 80px) 80px', }}>
 
       {/* Section header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
@@ -77,7 +77,7 @@ console.log('coming soon error:', error);
       </div>
 
       {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
         {films.map((film) => {
           const country = film.countries?.code || '';
           const director = film.directors?.name || '';

@@ -28,3 +28,11 @@ html {
   .film-strip { display: none !important; }
   .poster-strip { display: none !important; }
 }
+
+@media (max-width: 768px) {
+  .spotlight { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .picks-blur { display: none !important; }
+}

@@ -325,7 +325,7 @@ export default function Home() {
       {!loaded && <FilmLoader onComplete={() => setLoaded(true)} />}
 
       {/* Spotlight */}
-      <div style={{
+      <div className="spotlight" style={{
         position: 'fixed',
         width: '140px', height: '140px', borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(201,168,76,0.22) 0%, rgba(201,168,76,0.07) 45%, transparent 70%)',
