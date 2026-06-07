@@ -25,4 +25,6 @@ html {
 
 @media (max-width: 768px) {
   .featured-grid { grid-template-columns: 1fr; }
+  .film-strip { display: none !important; }
+  .poster-strip { display: none !important; }
 }
