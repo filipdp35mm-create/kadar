@@ -16,3 +16,16 @@ html, body {
 html {
   overflow-x: hidden;
 }
+
+.scroll-blur {
+  transition: filter 0.15s ease;
+}
+
+.scroll-blur.scrolling {
+  filter: blur(1.5px);
+}
+
+@media (max-width: 768px) {
+  .film-strip { display: none !important; }
+  .poster-strip { display: none !important; }
+}

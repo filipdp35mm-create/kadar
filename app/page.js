@@ -358,9 +358,9 @@ export default function Home() {
         <Navbar />
 
 
-        {/* LEFT film strip */}
-        <div style={{
-          position: 'fixed', top: '90px', left: 0, width: '48px',
+{/* LEFT film strip */}
+<div className="film-strip" style={{
+  position: 'fixed', top: '90px', left: 0, width: '48px',
           bottom: '0', overflow: 'hidden', pointerEvents: 'none', zIndex: 1,
         }}>
           <div style={{
@@ -373,7 +373,7 @@ export default function Home() {
         </div>
 
         {/* ============ HERO SECTION ============ */}
-        <section style={{ padding: '80px 80px 100px', position: 'relative', overflow: 'hidden', minHeight: '520px' }}>
+<section style={{ padding: 'clamp(32px, 8vw, 100px) clamp(20px, 8vw, 80px) clamp(16px, 4vw, 60px)', position: 'relative', overflow: 'hidden', minHeight: 'auto' }}>
 
           {/* Background blurred КАДАР */}
           <div style={{
@@ -385,11 +385,12 @@ export default function Home() {
             fontWeight: '700', filter: 'blur(8px)', whiteSpace: 'nowrap', zIndex: 0,
           }}>КАДАР</div>
 
-          {/* Right poster strip */}
-          <div style={{
-            position: 'absolute', top: '70px', right: 0, width: '160px', height: 'calc(100% - 70px)',
-            display: 'flex', flexDirection: 'column', zIndex: 1, pointerEvents: 'none',
-          }}>
+{/* Right poster strip */}
+<div className="poster-strip" style={{
+  display: 'flex',
+  position: 'absolute', top: '70px', right: 0, width: '160px',
+  flexDirection: 'column', zIndex: 1, pointerEvents: 'none',
+}}>
             {[0, 1, 2, 3].map((i) => (
               <div key={i} style={{
                 flex: 1, background: '#0d0c08',
@@ -410,7 +411,7 @@ export default function Home() {
           {/* Hero content */}
           <div style={{ position: 'relative', zIndex: 2, maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
             <div style={{
-              fontSize: '11px', fontWeight: '500', letterSpacing: '4px',
+              fontSize: 'clamp(8px, 1.5vw, 11px)', fontWeight: '500', letterSpacing: 'clamp(2px, 0.5vw, 4px)',
               textTransform: 'uppercase', color: '#c9a84c', marginBottom: '16px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
             }}>
@@ -420,7 +421,7 @@ export default function Home() {
             </div>
 
             <h1 style={{
-              fontFamily: 'sans-serif', fontSize: '72px', lineHeight: '1.05',
+              fontFamily: 'sans-serif', fontSize: 'clamp(36px, 9vw, 72px)', lineHeight: '1.05',
               letterSpacing: '3px', color: '#f0e8d0', margin: '0 0 8px',
               fontWeight: '700', textTransform: 'uppercase',
             }}>
@@ -429,7 +430,7 @@ export default function Home() {
                 {glitchLine2}{' '}
                 <span style={{
                   fontFamily: "'Pinyon Script', cursive",
-                  fontSize: '80px', color: '#c9a84c', fontWeight: '700',
+                  fontSize: 'clamp(48px, 6vw, 80px)', color: '#c9a84c', fontWeight: '700',
                   textTransform: 'none', letterSpacing: '1px',
                   animation: 'storyPulse 3s ease-in-out infinite',
                   display: 'inline-block',
@@ -438,7 +439,7 @@ export default function Home() {
             </h1>
 
             <p style={{
-              fontSize: '15px', fontWeight: '300', color: '#5a5040',
+              fontSize: 'clamp(12px, 2vw, 15px)', fontWeight: '300', color: '#5a5040',
               letterSpacing: '1px', margin: '20px auto 32px',
               lineHeight: '1.6', maxWidth: '380px', textAlign: 'center',
             }}>
@@ -448,10 +449,10 @@ export default function Home() {
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button onClick={() => setShowBrowse(true)} style={{
-                background: '#c9a84c', border: 'none', color: '#0a0a0a',
-                padding: '12px 28px', fontSize: '13px', fontWeight: '700',
-                letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
-                borderRadius: '2px', transition: 'all 0.15s ease',
+background: '#c9a84c', border: 'none', color: '#0a0a0a',
+padding: 'clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 28px)', fontSize: 'clamp(11px, 1.5vw, 13px)', fontWeight: '700',
+letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
+borderRadius: '2px', transition: 'all 0.15s ease', whiteSpace: 'nowrap',
               }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#fff7e0'; e.currentTarget.style.boxShadow = '0 0 24px rgba(201,168,76,0.6)'; setTimeout(() => { if (e.currentTarget) { e.currentTarget.style.background = '#c9a84c'; e.currentTarget.style.boxShadow = '0 0 12px rgba(201,168,76,0.3)'; } }, 150); }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; e.currentTarget.style.boxShadow = 'none'; }}
@@ -459,16 +460,16 @@ export default function Home() {
 
               <button onClick={() => window.location.href = '/directors'} style={{
                 background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
-                padding: '12px 28px', fontSize: '13px', fontWeight: '500',
+                padding: 'clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 28px)', fontSize: 'clamp(11px, 1.5vw, 13px)', fontWeight: '500',
                 letterSpacing: '3px', textTransform: 'uppercase', cursor: 'pointer',
-                borderRadius: '2px', transition: 'all 0.15s ease',
+                borderRadius: '2px', transition: 'all 0.15s ease', whiteSpace: 'nowrap',
               }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#c9a84c'; e.currentTarget.style.color = '#fff7e0'; e.currentTarget.style.boxShadow = '0 0 20px rgba(201,168,76,0.4)'; setTimeout(() => { if (e.currentTarget) { e.currentTarget.style.boxShadow = '0 0 8px rgba(201,168,76,0.15)'; } }, 150); }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#3a3020'; e.currentTarget.style.color = '#8a7f6a'; e.currentTarget.style.boxShadow = 'none'; }}
               >For Directors</button>
             </div>
 
-            <div style={{ display: 'flex', marginTop: '48px', borderTop: '0.5px solid #1a1610', paddingTop: '32px' }}>
+            <div style={{ display: 'flex', marginTop: 'clamp(24px, 5vw, 48px)', borderTop: '0.5px solid #1a1610', paddingTop: 'clamp(12px, 3vw, 32px)' }}>
               {[
                 { num: films + '+', label: 'Short Films' },
                 { num: videos + '+', label: 'Music Videos' },
@@ -480,8 +481,8 @@ export default function Home() {
                   borderRight: i < 2 ? '0.5px solid #1a1610' : 'none',
                   marginRight: i < 2 ? '24px' : '0',
                 }}>
-                  <div style={{ fontSize: '36px', color: '#c9a84c', letterSpacing: '2px', lineHeight: '1', fontWeight: '700' }}>{stat.num}</div>
-                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#3a3020', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
+                  <div style={{ fontSize: 'clamp(22px, 4vw, 36px)', color: '#c9a84c', letterSpacing: '2px', lineHeight: '1', fontWeight: '700' }}>{stat.num}</div>
+                  <div style={{ fontSize: 'clamp(10px, 2vw, 11px)', letterSpacing: '2px', textTransform: 'uppercase', color: '#3a3020', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -491,7 +492,7 @@ export default function Home() {
         {/* ============ FEATURED SECTION ============ */}
         {featured.length > 0 && film && (
           <section ref={featuredRef} style={{
-            padding: '0 80px 60px', background: '#0a0a0a',
+            padding: '0 clamp(16px, 8vw, 80px) clamp(40px, 6vw, 60px)', background: '#0a0a0a',
             position: 'relative', zIndex: 0, marginTop: '-1px',
           }}>
             <div style={{ paddingTop: '48px', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
@@ -499,7 +500,7 @@ export default function Home() {
               <div style={{ flex: 1, height: '0.5px', background: '#1a1610' }} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
 
               {/* Main visual */}
               <div>
