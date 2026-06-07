@@ -289,13 +289,13 @@ export default function DirectorsDashboard() {
     setVerifying(true); setVerifError(null); setVerifMsg(null);
 
     const { error } = await supabase.from('director_profiles')
-      .update({ verification_status: 'pending' })
+      .update({ verification_status: 'pending', email: user.email })
       .eq('id', user.id);
 
     if (error) { setVerifError(error.message); setVerifying(false); return; }
 
     try {
-      await fetch('/api/notify-submission', {
+      await fetch('/api/notify-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
