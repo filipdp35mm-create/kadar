@@ -15,6 +15,14 @@ const [hoveredBtn, setHoveredBtn] = useState(null);
 const [dark, setDark] = useState(true);
 const [hoveredNav, setHoveredNav] = useState(null);
 const [showProfile, setShowProfile] = useState(false);
+const [drawerOpen, setDrawerOpen] = useState(false);
+const [drawerClosing, setDrawerClosing] = useState(false);
+
+function closeDrawer() {
+  setDrawerClosing(true);
+  setTimeout(() => { setDrawerOpen(false); setDrawerClosing(false); }, 400);
+}
+
 const COUNTRY_MAP = {
   'North Macedonia': 'MK', 'Serbia': 'SRB', 'Bulgaria': 'BG',
   'Albania': 'AL', 'Greece': 'GR', 'Bosnia': 'BA',
@@ -82,6 +90,17 @@ useEffect(() => {
         background: '#0a0a0a',
       }}>
 
+        {/* Hamburger */}
+        <button className="nav-hamburger" onClick={() => setDrawerOpen(true)} style={{
+          background: 'none', border: '0.5px solid #2a2418',
+          width: '36px', height: '36px', cursor: 'pointer', borderRadius: '2px',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
+        }}>
+          <span style={{ width: '16px', height: '0.5px', background: '#c9a84c', display: 'block' }} />
+          <span style={{ width: '16px', height: '0.5px', background: '#c9a84c', display: 'block' }} />
+          <span style={{ width: '16px', height: '0.5px', background: '#c9a84c', display: 'block' }} />
+        </button>
+
         {/* Logo */}
         <div
           onClick={() => window.location.href = '/'}
@@ -94,7 +113,7 @@ useEffect(() => {
           />
         </div>
 
-<ul style={{ display: 'flex', gap: '28px', listStyle: 'none', position: 'relative' }}>
+<ul className="nav-links" style={{ display: 'flex', gap: '28px', listStyle: 'none', position: 'relative' }}>
   {[
     {
       label: 'Films',
@@ -212,8 +231,7 @@ if (section.heading === 'Genre') {
 </ul>
 
         {/* Right side */}
-        <div style={{ display: 'flex', gap: '10px', justifySelf: 'end', alignItems: 'center' }}>
-
+        <div className="nav-auth" style={{ display: 'flex', gap: '10px', justifySelf: 'end', alignItems: 'center' }}>
 <button
   onClick={() => {
     setDark(!dark);
@@ -300,6 +318,93 @@ if (section.heading === 'Genre') {
           )}
         </div>
       </nav>
+
+      {/* Mobile drawer */}
+{drawerOpen && typeof document !== 'undefined' && createPortal(
+  <div style={{
+    position: 'fixed', inset: 0, zIndex: 9999,
+  }}>
+    {/* Overlay */}
+    <div onClick={closeDrawer} style={{
+      position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)',
+      animation: 'overlayFadeIn 0.3s ease forwards',
+    }} />
+    {/* Drawer */}
+    <div style={{
+      position: 'absolute', top: 0, left: 0, bottom: 0, width: '280px',
+      background: '#0a0a0a', borderRight: '0.5px solid #2a2418',
+      display: 'flex', flexDirection: 'column', padding: '32px 24px',
+      overflowY: 'auto',
+      animation: drawerClosing ? 'drawerSlideOut 0.4s cubic-bezier(0.4,0,0.2,1) forwards' : 'drawerSlideIn 0.4s cubic-bezier(0.4,0,0.2,1) forwards',
+    }}>
+      {/* Logo + close */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
+        <img src="/KADAR LOGO.png" alt="Кадар" style={{ height: '28px', mixBlendMode: 'screen' }} />
+        <button onClick={closeDrawer} style={{
+          background: 'none', border: 'none', color: '#5a5040', fontSize: '20px', cursor: 'pointer',
+        }}>✕</button>
+      </div>
+
+      {/* Nav items */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '40px' }}>
+        {['Films', 'Music Videos', 'Directors', 'Festivals'].map(label => (
+          <a key={label} href="#" onClick={e => {
+            e.preventDefault();
+            closeDrawer();
+            const isMV = label === 'Music Videos';
+            const detail = isMV ? { type: 'music_video' } : {};
+            if (window.location.pathname === '/') {
+              window.dispatchEvent(new CustomEvent('open-browse', { detail }));
+            } else {
+              window.location.href = isMV ? '/?browse=true&type=music_video' : '/?browse=true';
+            }
+          }} style={{
+            fontSize: '13px', letterSpacing: '3px', textTransform: 'uppercase',
+            color: '#8a7f6a', textDecoration: 'none', padding: '14px 0',
+            borderBottom: '0.5px solid #1a1610', transition: 'color 0.2s ease',
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = '#f0e8d0'}
+            onMouseLeave={e => e.currentTarget.style.color = '#8a7f6a'}
+          >{label}</a>
+        ))}
+      </nav>
+
+      {/* Auth */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: 'auto' }}>
+        {user ? (
+          <>
+            <div style={{ fontSize: '12px', color: '#c9a84c', letterSpacing: '1px', marginBottom: '8px' }}>
+              {username || user.email.split('@')[0]}
+            </div>
+            <button onClick={() => { closeDrawer(); setShowProfile(true); }} style={{
+              background: 'none', border: '0.5px solid #2a2418', color: '#8a7f6a',
+              padding: '10px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
+              cursor: 'pointer', borderRadius: '2px',
+            }}>Profile</button>
+            <button onClick={() => { closeDrawer(); handleSignOut(); }} style={{
+              background: 'none', border: '0.5px solid #3a1a10', color: '#e05a3a',
+              padding: '10px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
+              cursor: 'pointer', borderRadius: '2px',
+            }}>Sign Out</button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => { closeDrawer(); setModalMode('login'); setShowModal(true); }} style={{
+              background: 'none', border: '0.5px solid #3a3020', color: '#8a7f6a',
+              padding: '10px', fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase',
+              cursor: 'pointer', borderRadius: '2px',
+            }}>Log In</button>
+            <button onClick={() => { closeDrawer(); setModalMode('signup'); setShowModal(true); }} style={{
+              background: '#c9a84c', border: 'none', color: '#0a0a0a',
+              padding: '10px', fontSize: '11px', fontWeight: '700', letterSpacing: '3px',
+              textTransform: 'uppercase', cursor: 'pointer', borderRadius: '2px',
+            }}>Join</button>
+          </>
+        )}
+      </div>
+    </div>
+  </div>
+, document.body)}
 
       {!noModals && showModal && createPortal(
         <AuthModal initialMode={modalMode} onClose={() => setShowModal(false)} />,

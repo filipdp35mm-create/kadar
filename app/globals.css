@@ -36,3 +36,23 @@ html {
 @media (max-width: 768px) {
   .picks-blur { display: none !important; }
 }
+
+@media (max-width: 768px) {
+  .nav-links { display: none !important; }
+  .nav-auth { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+}
+.nav-hamburger { display: none; }
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes drawerSlideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
