@@ -55,7 +55,7 @@ export default function AdminPage() {
           КАДАР · ADMIN
         </div>
         <div style={{ display: 'flex', gap: '0' }}>
-          {[['directors','Director Verifications'],['films','Film Submissions']].map(([key, label]) => (
+          {[['directors','Director Verifications'],['films','Film Submissions'],['newsletter','Newsletter']].map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)} style={{
               background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: 'sans-serif', fontSize: '9px', letterSpacing: '4px',
@@ -70,7 +70,9 @@ export default function AdminPage() {
 
       {/* ── panels ── */}
       <div style={{ padding: '40px 56px' }}>
-        {tab === 'directors' ? <DirectorsTab supabaseAdmin={supabaseAdmin} /> : <FilmsTab supabaseAdmin={supabaseAdmin} />}
+        {tab === 'directors' && <DirectorsTab supabaseAdmin={supabaseAdmin} />}
+{tab === 'films' && <FilmsTab supabaseAdmin={supabaseAdmin} />}
+{tab === 'newsletter' && <NewsletterTab supabaseAdmin={supabaseAdmin} />}
       </div>
     </div>
   );
@@ -374,6 +376,50 @@ function FilmsTab({ supabaseAdmin }) {
   );
 }
 
+function NewsletterTab({ supabaseAdmin }) {
+  const [count, setCount] = useState(null);
+  const [sending, setSending] = useState(false);
+  const [msg, setMsg] = useState(null);
+
+  useEffect(() => {
+    supabaseAdmin.from('waitlist').select('id', { count: 'exact', head: true })
+      .then(({ count }) => setCount(count));
+  }, []);
+
+  async function sendLaunch() {
+    setSending(true);
+    setMsg(null);
+    const { data } = await supabaseAdmin.from('waitlist').select('email');
+    const emails = (data || []).map(r => r.email);
+    const res = await fetch('/api/notify-launch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emails }),
+    });
+    const json = await res.json();
+    if (json.ok) setMsg({ type: 'ok', text: `✓ Launch email sent to ${emails.length} people.` });
+    else setMsg({ type: 'err', text: `✗ Something went wrong.` });
+    setSending(false);
+  }
+
+  return (
+    <section>
+      <h1 style={{ fontSize: '22px', fontWeight: '400', margin: '0 0 6px' }}>Launch Newsletter</h1>
+      <p style={{ fontSize: '11px', color: muted, fontFamily: 'sans-serif', margin: '0 0 32px', letterSpacing: '1px' }}>
+        Sends the "we're live" email to everyone on the waitlist. One time, one button.
+      </p>
+      <Toast msg={msg} onClose={() => setMsg(null)} />
+      <div style={{ background: card, border: `0.5px solid ${border}`, padding: '32px', maxWidth: '400px' }}>
+        <div style={{ fontSize: '36px', color: gold, fontWeight: '300', marginBottom: '4px' }}>{count ?? '—'}</div>
+        <div style={{ fontSize: '9px', letterSpacing: '3px', color: muted, fontFamily: 'sans-serif', textTransform: 'uppercase', marginBottom: '32px' }}>People on the waitlist</div>
+        <button onClick={sendLaunch} disabled={sending} style={{ ...btn('gold'), opacity: sending ? 0.6 : 1, cursor: sending ? 'not-allowed' : 'pointer' }}>
+          {sending ? 'Sending...' : 'Send Launch Email'}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 // ─── Shared small components ──────────────────────────────────────────────────
 
 function Toast({ msg, onClose }) {
@@ -424,3 +470,4 @@ function Row({ children }) {
     </div>
   );
 }
+
