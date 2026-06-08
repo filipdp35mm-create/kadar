@@ -290,7 +290,7 @@ const { data } = await query;
         transform: visible ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.96)',
         zIndex: 101, background: '#0a0a0a',
         border: '0.5px solid #2a2418', borderRadius: '4px',
-        width: '96vw', maxWidth: '1600px', height: '92vh',
+        width: '98vw', maxWidth: '1600px', height: '96vh',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -307,7 +307,7 @@ const { data } = await query;
         >×</button>
 
         {/* Top bar */}
-        <div style={{ padding: '28px 40px', borderBottom: '0.5px solid #1a1610', display: 'flex', gap: '16px', alignItems: 'center', flexShrink: 0, zIndex: 2, position: 'relative' }}>
+        <div style={{ padding: 'clamp(16px, 3vw, 28px) clamp(16px, 4vw, 40px)', borderBottom: '0.5px solid #1a1610', display: 'flex', gap: '12px', alignItems: 'center', flexShrink: 0, zIndex: 2, position: 'relative', flexWrap: 'wrap' }}>
           <div style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: '#c9a84c', fontWeight: '600', whiteSpace: 'nowrap', marginRight: '8px' }}>
   {type === 'music_video' ? 'Music Videos' : 'Browse Films'}
 </div>
@@ -318,7 +318,7 @@ const { data } = await query;
             </svg>
             <input placeholder="Search by title or director..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', background: '#0d0c08', border: '0.5px solid #2a2418', borderRadius: '2px', color: '#f0e8d0', padding: '11px 14px 11px 40px', fontSize: '13px', letterSpacing: '0.5px', outline: 'none', boxSizing: 'border-box' }} />
           </div>
-          <select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} style={{ background: '#0d0c08', border: '0.5px solid #2a2418', color: '#8a7f6a', padding: '11px 14px', fontSize: '12px', letterSpacing: '1px', borderRadius: '2px', outline: 'none', cursor: 'pointer' }}>
+          <select className="browse-year-select" value={selectedYear} onChange={e => setSelectedYear(e.target.value)} style={{ background: '#0d0c08', border: '0.5px solid #2a2418', color: '#8a7f6a', padding: '11px 14px', fontSize: '12px', letterSpacing: '1px', borderRadius: '2px', outline: 'none', cursor: 'pointer' }}>
             <option>All Years</option>
             <option>2021 — 2026</option>
             <option>2011 — 2020</option>
@@ -331,7 +331,7 @@ const { data } = await query;
         </div>
 
         {/* Category tabs */}
-        <div style={{ padding: '16px 40px', borderBottom: '0.5px solid #1a1610', display: 'flex', gap: '8px', flexShrink: 0, zIndex: 2, position: 'relative' }}>
+        <div style={{ padding: 'clamp(12px, 2vw, 16px) clamp(16px, 4vw, 40px)', borderBottom: '0.5px solid #1a1610', display: 'flex', gap: '8px', flexShrink: 0, zIndex: 2, position: 'relative', overflowX: 'auto' }}>
           {CATEGORIES.map(cat => (
             <button key={cat} onClick={() => setActiveCategory(cat)} style={{
               background: activeCategory === cat ? '#c9a84c' : 'none',
@@ -346,7 +346,7 @@ const { data } = await query;
         </div>
 
         {/* Film grid */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', position: 'relative', zIndex: 2 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 'clamp(16px, 3vw, 32px) clamp(16px, 4vw, 40px)', position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
             {filtered.map((film, index) => (
 <div

@@ -56,3 +56,11 @@ html {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+  .footer-tagline { display: none; }
+}
+
+@media (max-width: 768px) {
+  .browse-year-select { display: none !important; }
+}
