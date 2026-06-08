@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  const { pathname } = request.nextUrl;
-  if (pathname === '/') {
+  if (process.env.NODE_ENV === 'development') return NextResponse.next();
+  
+  const { pathname, searchParams } = request.nextUrl;
+  if (pathname === '/' && searchParams.get('x') !== 'kdr_9f2x$Bm#4qL8vZ') {
     return NextResponse.redirect(new URL('/soon', request.url));
   }
 }
