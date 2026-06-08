@@ -6,8 +6,11 @@ import { supabase } from '../../lib/supabase';
 // ── Helpers ────────────────────────────────────────────────────────────
 function paymentStatusColor(status) {
   if (status === 'paid') return '#6ab87a';
+  if (status === 'live') return '#6ab87a';
+  if (status === 'approved') return '#c9a84c';
   if (status === 'pending') return '#c9a84c';
   if (status === 'late') return '#e05a3a';
+  if (status === 'rejected') return '#e05a3a';
   return '#5a5040';
 }
 
@@ -23,6 +26,15 @@ function formatDate(dateStr) {
 }
 
 // ── Small UI pieces ────────────────────────────────────────────────────
+const STATUS_LABELS = {
+  pending:  'Во преглед',
+  approved: 'Наскоро live',
+  rejected: 'Одбиено',
+  live:     'Live',
+  paid:     'Активно',
+  late:     'Задоцнето',
+};
+
 function Badge({ status }) {
   const color = paymentStatusColor(status);
   return (
@@ -30,7 +42,7 @@ function Badge({ status }) {
       fontSize: '8px', letterSpacing: '2px', textTransform: 'uppercase',
       color, border: `0.5px solid ${color}`, padding: '2px 7px',
       borderRadius: '1px', fontFamily: 'sans-serif', opacity: 0.9,
-    }}>{status}</span>
+    }}>{STATUS_LABELS[status] || status}</span>
   );
 }
 
@@ -194,8 +206,9 @@ export default function DirectorsDashboard() {
 
       const { data: dirFilms } = await supabase
         .from('director_films')
-        .select('*, films(title, type, year)')
+        .select('*, films(id, title, type, year, status, poster_file)')
         .eq('director_id', session.user.id)
+        .is('removed_at', null)
         .order('listed_at', { ascending: false });
       setFilms(dirFilms || []);
 
@@ -332,6 +345,7 @@ export default function DirectorsDashboard() {
   const activeFilms = films.filter(f => !f.removed_at);
   const lateFilms = activeFilms.filter(f => f.payment_status === 'late');
   const pendingSubs = submissions.filter(s => s.status === 'pending');
+  const awaitingPayment = submissions.filter(s => s.status === 'approved');
 
   return (
     <main style={{
@@ -427,6 +441,7 @@ export default function DirectorsDashboard() {
                 {[
                   { label: 'Активни филмови', value: activeFilms.length },
                   { label: 'На чекање', value: pendingSubs.length },
+                  { label: 'Чекаат плаќање', value: awaitingPayment.length },
                   { label: 'Задоцнети плаќања', value: lateFilms.length, warn: lateFilms.length > 0 },
                   { label: 'Вкупно поднесени', value: submissions.length },
                 ].map((s, i) => (
@@ -538,9 +553,14 @@ export default function DirectorsDashboard() {
                         </div>
                         <div style={{ fontSize: '10px', color: '#5a5040', fontFamily: 'sans-serif', letterSpacing: '1px' }}>{s.type === 'short_film' ? 'Краток филм' : 'Музичко видео'}</div>
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>{formatDate(s.submitted_at)}</div>
-                        <Badge status={s.status} />
+                        <Badge status={
+                          s.status === 'live' ? 'live' :
+                          s.status === 'approved' ? 'approved' :
+                          s.status === 'rejected' ? 'rejected' :
+                          'pending'
+                        } />
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>
-                          {s.status === 'approved' ? <Badge status={matched?.payment_status || 'pending'} /> : '—'}
+                          {s.status === 'live' ? <Badge status="paid" /> : '—'}
                         </div>
                       </div>
                     );
