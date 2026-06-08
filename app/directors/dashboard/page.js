@@ -111,11 +111,11 @@ function SelectField({ label, value, onChange, options, required }) {
 
 // ── Nav tabs ───────────────────────────────────────────────────────────
 const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'films', label: 'My Films' },
-  { id: 'submit', label: 'Submit Film' },
-  { id: 'verification', label: 'Verification' },
-  { id: 'profile', label: 'Profile' },
+  { id: 'overview', label: 'Преглед' },
+  { id: 'films', label: 'Мои филмови' },
+  { id: 'submit', label: 'Поднеси филм' },
+  { id: 'verification', label: 'Верификација' },
+  { id: 'profile', label: 'Профил' },
 ];
 
 // ── MAIN DASHBOARD ─────────────────────────────────────────────────────
@@ -274,7 +274,7 @@ export default function DirectorsDashboard() {
     const { data: subs } = await supabase.from('film_submissions').select('*').eq('director_id', user.id).order('submitted_at', { ascending: false });
     setSubmissions(subs || []);
 
-    setSubmitMsg('Submission received. You will hear back within 5 business days.');
+    setSubmitMsg('Твојата пријава е веќе поднесена. Ќе добиеш известување за резултатот во рок од 5 работни дена.');
     setSubmitting(false);
     setTab('films');
   }
@@ -359,7 +359,7 @@ export default function DirectorsDashboard() {
           {/* Logo */}
           <div style={{ marginBottom: '40px' }}>
             <img src="/KADAR LOGO.png" alt="Кадар" style={{ height: '28px', mixBlendMode: 'screen', opacity: 0.8 }} />
-            <div style={{ fontSize: '8px', letterSpacing: '3px', color: '#3a3020', textTransform: 'uppercase', fontFamily: 'sans-serif', marginTop: '6px' }}>Director Portal</div>
+            <div style={{ fontSize: '8px', letterSpacing: '3px', color: '#d0c8b0', textTransform: 'uppercase', fontFamily: 'sans-serif', marginTop: '6px' }}>Портал за Режисери</div>
           </div>
 
           {/* Director name */}
@@ -371,7 +371,7 @@ export default function DirectorsDashboard() {
               {profile?.name || 'Director'}
             </div>
             <div style={{ fontSize: '10px', color: '#3a3020', letterSpacing: '0.5px', fontFamily: 'sans-serif' }}>
-              {profile?.verified ? '✓ Verified' : 'Unverified'}
+              {profile?.verified ? '✓ Верификуван' : 'Неверификуван'}
             </div>
           </div>
 
@@ -406,7 +406,7 @@ export default function DirectorsDashboard() {
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#e05a3a'; e.currentTarget.style.color = '#e05a3a'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1610'; e.currentTarget.style.color = '#3a3020'; }}
-          >Sign Out</button>
+          >Одјави се</button>
         </aside>
 
         {/* ── MAIN CONTENT ── */}
@@ -416,23 +416,23 @@ export default function DirectorsDashboard() {
           {tab === 'overview' && (
             <div style={fadeUp(0)}>
               <div style={{ marginBottom: '40px' }}>
-                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Dashboard</div>
+                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Контролна табла</div>
                 <h1 style={{ fontSize: '28px', fontWeight: '400', color: '#f0e8d0', margin: 0 }}>
-                  Welcome back{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}.
+                  Добредојде назад{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}.
                 </h1>
               </div>
 
               {/* Stats row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: '#1a1610', border: '0.5px solid #1a1610', borderRadius: '2px', marginBottom: '40px', overflow: 'hidden' }}>
                 {[
-                  { label: 'Active Films', value: activeFilms.length },
-                  { label: 'Pending Review', value: pendingSubs.length },
-                  { label: 'Late Payments', value: lateFilms.length, warn: lateFilms.length > 0 },
-                  { label: 'Total Submitted', value: submissions.length },
+                  { label: 'Активни филмови', value: activeFilms.length },
+                  { label: 'На чекање', value: pendingSubs.length },
+                  { label: 'Задоцнети плаќања', value: lateFilms.length, warn: lateFilms.length > 0 },
+                  { label: 'Вкупно поднесени', value: submissions.length },
                 ].map((s, i) => (
                   <div key={i} style={{ background: '#080806', padding: '24px 20px' }}>
                     <div style={{ fontSize: '28px', fontWeight: '300', color: s.warn ? '#e05a3a' : '#c9a84c', letterSpacing: '-0.5px', marginBottom: '6px' }}>{s.value}</div>
-                    <div style={{ fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: '#3a3020', fontFamily: 'sans-serif' }}>{s.label}</div>
+                    <div style={{ fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: '#f0e8d0', fontFamily: 'sans-serif' }}>{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -459,7 +459,7 @@ export default function DirectorsDashboard() {
               {/* Recent submissions */}
               {submissions.length > 0 && (
                 <div>
-                  <SectionHeader label="Recent Submissions" action="View All" onAction={() => setTab('films')} />
+                  <SectionHeader label="Последни поднесувања" action="Сите" onAction={() => setTab('films')} />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: '#1a1610', border: '0.5px solid #1a1610', borderRadius: '1px', overflow: 'hidden' }}>
                     {submissions.slice(0, 4).map(s => (
                       <div key={s.id} style={{
@@ -482,13 +482,13 @@ export default function DirectorsDashboard() {
                   border: '0.5px solid #1a1610', borderRadius: '1px',
                   padding: '48px', textAlign: 'center',
                 }}>
-                  <div style={{ fontSize: '13px', color: '#3a3020', marginBottom: '16px', letterSpacing: '0.5px' }}>No films submitted yet.</div>
+                  <div style={{ fontSize: '13px', color: '#3a3020', marginBottom: '16px', letterSpacing: '0.5px' }}>Нема поднесени филмови.</div>
                   <button onClick={() => setTab('submit')} style={{
                     background: '#c9a84c', border: 'none', color: '#060605',
                     padding: '10px 24px', fontSize: '10px', letterSpacing: '4px',
                     textTransform: 'uppercase', cursor: 'pointer', borderRadius: '1px',
                     fontFamily: 'sans-serif',
-                  }}>Submit Your First Film</button>
+                  }}>Поднеси го твојот прв филм. Со среќа!</button>
                 </div>
               )}
             </div>
@@ -498,18 +498,18 @@ export default function DirectorsDashboard() {
           {tab === 'films' && (
             <div style={fadeUp(0)}>
               <div style={{ marginBottom: '32px' }}>
-                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>My Films</div>
-                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: 0 }}>Submissions & Active Listings</h1>
+                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Мои филмови</div>
+                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: 0 }}>Поднесувања и активни записи</h1>
               </div>
 
               {submissions.length === 0 ? (
                 <div style={{ border: '0.5px solid #1a1610', borderRadius: '1px', padding: '48px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', color: '#3a3020', marginBottom: '16px' }}>No submissions yet.</div>
+                  <div style={{ fontSize: '13px', color: '#3a3020', marginBottom: '16px' }}>Нема поднесени филмови.</div>
                   <button onClick={() => setTab('submit')} style={{
                     background: 'none', border: '0.5px solid #2a2418', color: '#8a7f6a',
                     padding: '10px 24px', fontSize: '10px', letterSpacing: '3px',
                     textTransform: 'uppercase', cursor: 'pointer', borderRadius: '1px', fontFamily: 'sans-serif',
-                  }}>Submit a Film</button>
+                  }}>Поднеси филм</button>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: '#1a1610', border: '0.5px solid #1a1610', borderRadius: '1px', overflow: 'hidden' }}>
@@ -519,7 +519,7 @@ export default function DirectorsDashboard() {
                     display: 'grid', gridTemplateColumns: '1fr 100px 120px 100px 120px',
                     gap: '16px',
                   }}>
-                    {['Title', 'Type', 'Submitted', 'Status', 'Payment'].map(h => (
+                    {['Наслов', 'Тип', 'Поднесено', 'Статус', 'Плаќања'].map(h => (
                       <div key={h} style={{ fontSize: '8px', letterSpacing: '3px', textTransform: 'uppercase', color: '#3a3020', fontFamily: 'sans-serif' }}>{h}</div>
                     ))}
                   </div>
@@ -536,7 +536,7 @@ export default function DirectorsDashboard() {
                           <div style={{ fontSize: '13px', color: '#d0c8b0', marginBottom: '2px' }}>{s.title}</div>
                           {s.year && <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>{s.year}</div>}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#5a5040', fontFamily: 'sans-serif', letterSpacing: '1px' }}>{s.type === 'short_film' ? 'Short Film' : 'Music Video'}</div>
+                        <div style={{ fontSize: '10px', color: '#5a5040', fontFamily: 'sans-serif', letterSpacing: '1px' }}>{s.type === 'short_film' ? 'Краток филм' : 'Музичко видео'}</div>
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>{formatDate(s.submitted_at)}</div>
                         <Badge status={s.status} />
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>
@@ -554,11 +554,11 @@ export default function DirectorsDashboard() {
           {tab === 'submit' && (
             <div style={fadeUp(0)}>
               <div style={{ marginBottom: '32px' }}>
-                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Submit</div>
-                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: '0 0 8px' }}>Submit a Film</h1>
+                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Поднеси</div>
+                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: '0 0 8px' }}>Поднеси филм</h1>
                 <p style={{ fontSize: '13px', color: '#5a5040', lineHeight: '1.8', margin: 0, maxWidth: '520px' }}>
-                  Upload your film to SwissTransfer or WeTransfer, paste the link below, and fill in the details.
-                  We'll review and get back to you within 5 business days.
+                  Прикачи го филмот на Swisstransfer или WeTransfer, залепи го линкот подолу, и пополни ги деталите.
+                  По проверката на поднесувањето ќе ви биде испратено известување за одлуката во рок од 5 деловни дена.
                 </p>
               </div>
 
@@ -569,7 +569,7 @@ export default function DirectorsDashboard() {
                   opacity: 0.6,
                 }}>
                   <div style={{ fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#5a5040', fontFamily: 'sans-serif', marginBottom: '12px' }}>
-                    {profile?.verification_status === 'pending' ? 'Verification Pending' : 'Verification Required'}
+                    {profile?.verification_status === 'pending' ? 'Верификацијата е во тек' : 'Потребна е верификација'}
                   </div>
                   <div style={{ fontSize: '13px', color: '#3a3020', lineHeight: '1.8', marginBottom: '20px' }}>
                     {profile?.verification_status === 'pending'
@@ -581,7 +581,7 @@ export default function DirectorsDashboard() {
                       background: 'none', border: '0.5px solid #2a2418', color: '#8a7f6a',
                       padding: '10px 24px', fontSize: '10px', letterSpacing: '3px',
                       textTransform: 'uppercase', cursor: 'pointer', borderRadius: '1px', fontFamily: 'sans-serif',
-                    }}>Request Verification →</button>
+                    }}>Побарај верификација →</button>
                   )}
                 </div>
               )}
@@ -593,22 +593,22 @@ export default function DirectorsDashboard() {
                   maxWidth: '680px',
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                    <Field label="Film Title" value={formTitle} onChange={e => setFormTitle(e.target.value)} placeholder="Title of your film" required />
+                    <Field label="Наслов на филм" value={formTitle} onChange={e => setFormTitle(e.target.value)} placeholder="Наслов на вашиот филм" required />
                     <SelectField label="Type" value={formType} onChange={e => setFormType(e.target.value)} required options={[
                       { value: 'short_film', label: 'Short Film' },
                       { value: 'music_video', label: 'Music Video' },
                     ]} />
-                    <Field label="Year" type="number" value={formYear} onChange={e => setFormYear(e.target.value)} placeholder="2024" />
-                    <Field label="Country" value={formCountry} onChange={e => setFormCountry(e.target.value)} placeholder="e.g. North Macedonia" />
-                    <Field label="Duration (minutes)" type="number" value={formDuration} onChange={e => setFormDuration(e.target.value)} placeholder="e.g. 15" />
-                    <Field label="IMDb Link" value={formImdb} onChange={e => setFormImdb(e.target.value)} placeholder="https://imdb.com/title/..." />
+                    <Field label="Година" type="number" value={formYear} onChange={e => setFormYear(e.target.value)} placeholder="2024" />
+                    <Field label="Држава" value={formCountry} onChange={e => setFormCountry(e.target.value)} placeholder="пр. Северна Македонија" />
+                    <Field label="Траење (минути)" type="number" value={formDuration} onChange={e => setFormDuration(e.target.value)} placeholder="пр. 15" />
+                    <Field label="IMDb линк" value={formImdb} onChange={e => setFormImdb(e.target.value)} placeholder="https://imdb.com/title/..." />
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '20px' }}>
-                    <Field label="Transfer Link" value={formLink} onChange={e => setFormLink(e.target.value)} placeholder="SwissTransfer or WeTransfer link" required />
-                    <Field label="Poster / Still Link" value={formPoster} onChange={e => setFormPoster(e.target.value)} placeholder="Link to poster image (optional)" />
-                    <Field label="Description / Synopsis" value={formDescription} onChange={e => setFormDescription(e.target.value)} placeholder="Brief description of your film..." textarea />
-                    <Field label="Festival History" value={formFestivals} onChange={e => setFormFestivals(e.target.value)} placeholder="List any festivals where this film was screened..." textarea />
+                    <Field label="Линк за прикачување" value={formLink} onChange={e => setFormLink(e.target.value)} placeholder="SwissTransfer или WeTransfer линк до филмот" required />
+                    <Field label="Линк до постер" value={formPoster} onChange={e => setFormPoster(e.target.value)} placeholder="Линк до постер за филмот" />
+                    <Field label="Синопсис" value={formDescription} onChange={e => setFormDescription(e.target.value)} placeholder="Опис на филмот" textarea />
+                    <Field label="Фестивалска историја" value={formFestivals} onChange={e => setFormFestivals(e.target.value)} placeholder="Наброј ги фестивалите каде што е прикажан филмот..." textarea />
                   </div>
 
                   {submitError && (
@@ -629,9 +629,9 @@ export default function DirectorsDashboard() {
                     }}
                       onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = '#fff0c0'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; }}
-                    >{submitting ? 'Submitting...' : 'Submit Film'}</button>
+                    >{submitting ? 'Се поднесува...' : 'Поднеси филм'}</button>
                     <p style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif', letterSpacing: '0.5px', margin: 0 }}>
-                      600 MKD / month after approval · 300 MKD first month
+                      600 денари месечно по одобрување. 300 денари за првиот филм.
                     </p>
                   </div>
                 </div>
@@ -643,24 +643,24 @@ export default function DirectorsDashboard() {
           {tab === 'verification' && (
             <div style={fadeUp(0)}>
               <div style={{ marginBottom: '32px' }}>
-                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Verification</div>
-                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: '0 0 8px' }}>Director Verification</h1>
+                <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Верификација</div>
+                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: '0 0 8px' }}>Верификација на режисер</h1>
                 <p style={{ fontSize: '13px', color: '#5a5040', lineHeight: '1.8', margin: 0, maxWidth: '520px' }}>
-                  Fill in the form below so we can verify your identity as a director.
-                  Once approved you'll be able to submit films to the platform.
+                  Пополнете го формуларот подолу така што ќе можеме да ве верификуваме како режисер.
+                  Откако ќе биде одобрена верификацијата, ќе можете да поднесувате филмови на платформата.
                 </p>
               </div>
 
               {profile?.verification_status === 'verified' && (
                 <div style={{ border: '0.5px solid #2a3a20', background: '#080d06', borderRadius: '1px', padding: '20px 24px' }}>
-                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#6ab87a', fontFamily: 'sans-serif' }}>✓ Verified Director</div>
+                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#6ab87a', fontFamily: 'sans-serif' }}>✓ Верификуван Режисер</div>
                 </div>
               )}
 
               {profile?.verification_status === 'pending' && (
                 <div style={{ border: '0.5px solid #3a2a10', background: '#0d0b06', borderRadius: '1px', padding: '20px 24px' }}>
-                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '6px' }}>Request Under Review</div>
-                  <div style={{ fontSize: '12px', color: '#8a7f6a' }}>We'll get back to you at {user?.email}.</div>
+                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '6px' }}>Барањето е На Преглед</div>
+                  <div style={{ fontSize: '12px', color: '#8a7f6a' }}>Ќе ти одговориме на {user?.email}.</div>
                 </div>
               )}
 
@@ -668,21 +668,21 @@ export default function DirectorsDashboard() {
                 <div style={{ border: '0.5px solid #1a1610', borderRadius: '1px', padding: '36px', background: '#080806', maxWidth: '580px' }}>
                   {profile?.verification_status === 'rejected' && (
                     <div style={{ border: '0.5px solid #3a1a10', background: '#0d0603', borderRadius: '1px', padding: '14px 18px', marginBottom: '24px', fontSize: '12px', color: '#e05a3a' }}>
-                      Your previous request was not approved. You may reapply below.
+                      Твоето претходно барање не беше одобрено. Можеш повторно да аплицираш по кратко време.
                     </div>
                   )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                      <Field label="Full Name" value={verifFullName} onChange={e => setVerifFullName(e.target.value)} placeholder="Your full name" required />
-                      <Field label="Country" value={verifCountry} onChange={e => setVerifCountry(e.target.value)} placeholder="e.g. North Macedonia" required />
+                      <Field label="Име и презиме" value={verifFullName} onChange={e => setVerifFullName(e.target.value)} placeholder="Your full name" required />
+                      <Field label="Држава" value={verifCountry} onChange={e => setVerifCountry(e.target.value)} placeholder="e.g. North Macedonia" required />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                      <Field label="Production Company" value={verifCompany} onChange={e => setVerifCompany(e.target.value)} placeholder="e.g. Filmmakers Inc." />
-                      <Field label="Phone Number" value={verifPhone} onChange={e => setVerifPhone(e.target.value)} placeholder="+389 ..." />
+                      <Field label="Продуцентска куќа" value={verifCompany} onChange={e => setVerifCompany(e.target.value)} placeholder="e.g. Filmmakers Inc." />
+                      <Field label="Телефонски број" value={verifPhone} onChange={e => setVerifPhone(e.target.value)} placeholder="+389 ..." />
                     </div>
-                    <Field label="IMDb Profile Link" value={verifImdb} onChange={e => setVerifImdb(e.target.value)} placeholder="https://imdb.com/name/..." />
-                    <Field label="Previous Work / Portfolio" value={verifWork} onChange={e => setVerifWork(e.target.value)} placeholder="Links to previous films, Vimeo, YouTube..." textarea />
-                    <Field label="Anything else you'd like us to know" value={verifNote} onChange={e => setVerifNote(e.target.value)} placeholder="Optional note..." textarea />
+                    <Field label="IMDB линк" value={verifImdb} onChange={e => setVerifImdb(e.target.value)} placeholder="https://imdb.com/name/..." />
+                    <Field label="Претходни дела" value={verifWork} onChange={e => setVerifWork(e.target.value)} placeholder="Links to previous films, Vimeo, YouTube..." textarea />
+                    <Field label="Нешто друго што би сакале да знаме" value={verifNote} onChange={e => setVerifNote(e.target.value)} placeholder="Optional note..." textarea />
                   </div>
                   {verifError && (
                     <div style={{ fontSize: '12px', color: '#e05a3a', marginBottom: '16px', padding: '10px 14px', border: '0.5px solid #3a1a10', background: '#0d0603', borderRadius: '1px' }}>{verifError}</div>
@@ -699,7 +699,7 @@ export default function DirectorsDashboard() {
                   }}
                     onMouseEnter={e => { if (!verifying) e.currentTarget.style.background = '#fff0c0'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; }}
-                  >{verifying ? 'Submitting...' : 'Request Verification'}</button>
+                  >{verifying ? 'Се поднесува...' : 'Побарај верификација'}</button>
                 </div>
               )}
             </div>
@@ -710,24 +710,24 @@ export default function DirectorsDashboard() {
             <div style={fadeUp(0)}>
               <div style={{ marginBottom: '32px' }}>
                 <div style={{ fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '10px' }}>Account</div>
-                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: 0 }}>Director Profile</h1>
+                <h1 style={{ fontSize: '24px', fontWeight: '400', color: '#f0e8d0', margin: 0 }}>Профил на режисер</h1>
               </div>
 
               <div style={{ border: '0.5px solid #1a1610', borderRadius: '1px', padding: '36px', background: '#080806', maxWidth: '580px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <Field label="Full Name" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Your name" />
-                    <Field label="Production Company" value={editCompany} onChange={e => setEditCompany(e.target.value)} placeholder="Optional" />
+                    <Field label="Име и презиме" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Вашето име и презиме" />
+                    <Field label="Компанија" value={editCompany} onChange={e => setEditCompany(e.target.value)} placeholder="Опционално" />
                   </div>
-                  <Field label="Bio" value={editBio} onChange={e => setEditBio(e.target.value)} placeholder="Short bio about you and your work..." textarea />
+                  <Field label="Биографија" value={editBio} onChange={e => setEditBio(e.target.value)} placeholder="Биографија за вас и вашата работа..." textarea />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <Field label="Website" value={editWebsite} onChange={e => setEditWebsite(e.target.value)} placeholder="https://yoursite.com" />
-                    <Field label="Country" value={editCountry} onChange={e => setEditCountry(e.target.value)} placeholder="e.g. North Macedonia" />
+                    <Field label="Вебстраница" value={editWebsite} onChange={e => setEditWebsite(e.target.value)} placeholder="https://yoursite.com" />
+                    <Field label="Држава" value={editCountry} onChange={e => setEditCountry(e.target.value)} placeholder="пр. Северна Македонија" />
                   </div>
                 </div>
 
                 <div style={{ paddingTop: '20px', borderTop: '0.5px solid #1a1610', marginBottom: '20px' }}>
-                  <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#3a3020', fontFamily: 'sans-serif', marginBottom: '8px' }}>Account Email</div>
+                  <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#3a3020', fontFamily: 'sans-serif', marginBottom: '8px' }}>Електронска пошта на режисерот</div>
                   <div style={{ fontSize: '13px', color: '#5a5040' }}>{user?.email}</div>
                 </div>
 
@@ -750,7 +750,7 @@ export default function DirectorsDashboard() {
                 }}
                   onMouseEnter={e => { if (!profileSaving) e.currentTarget.style.background = '#fff0c0'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; }}
-                >{profileSaving ? 'Saving...' : 'Save Profile'}</button>
+                >{profileSaving ? 'Зачувува...' : 'Зачувај'}</button>
               </div>
             </div>
           )}

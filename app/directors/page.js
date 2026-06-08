@@ -172,40 +172,34 @@ export default function DirectorsPage() {
 
         {/* Top — back + logo */}
         <div style={fadeUp(0)}>
-          <a href="/" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase',
-            color: '#3a3020', textDecoration: 'none', transition: 'color 0.2s ease',
-            fontFamily: 'sans-serif',
-          }}
-            onMouseEnter={e => e.currentTarget.style.color = '#c9a84c'}
-            onMouseLeave={e => e.currentTarget.style.color = '#3a3020'}
-          >
-            ← Return to Кадар
-          </a>
-
+          <img
+            src="/KADAR LOGO.png"
+            alt="Кадар"
+            style={{ height: '32px', width: 'auto', mixBlendMode: 'screen', opacity: 0.7 }}
+          />
           <div style={{ marginTop: '64px' }}>
             <div style={{
               fontSize: '9px', letterSpacing: '5px', textTransform: 'uppercase',
               color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '20px',
             }}>
-              Director Portal
+              Портал за Режисери
             </div>
             <h1 style={{
               fontSize: 'clamp(36px, 4vw, 56px)', fontWeight: '400',
               lineHeight: '1.15', margin: 0, letterSpacing: '-0.5px',
               color: '#f0e8d0',
             }}>
-              Your films.<br />
-              Your archive.<br />
-              <em style={{ color: '#c9a84c', fontStyle: 'italic' }}>Your audience.</em>
+              Твои филмови.<br />
+              Твоја архива.<br />
+              <em style={{ color: '#c9a84c', fontStyle: 'italic' }}>
+                Твоја публика.</em>
             </h1>
             <p style={{
               fontSize: '14px', color: '#5a5040', lineHeight: '1.9',
               letterSpacing: '0.3px', maxWidth: '400px', marginTop: '24px',
             }}>
-              List your short films and music videos on Кадар — the curated platform
-              for Balkan cinema. Reach audiences across the region and beyond.
+              Сите твои кратки филмови и музички видео записи на Кадар — специјализирана платформа за балканското кино.
+              Достигни публика низ регионот и пошироко.
             </p>
           </div>
         </div>
@@ -213,9 +207,9 @@ export default function DirectorsPage() {
         {/* Middle — three value props */}
         <div style={{ ...fadeUp(0.15), display: 'flex', flexDirection: 'column', gap: '0' }}>
           {[
-            { n: '01', title: 'Submit & Distribute', body: 'Upload once. Reach viewers across 11 countries on a platform built for the region.' },
-            { n: '02', title: 'Festival Access', body: 'Connect your films to Balkan festival listings and get discovered by programmers.' },
-            { n: '03', title: 'Transparent Pricing', body: '600 MKD / month per title. First month 300 MKD. No hidden fees, no revenue share.' },
+            { n: '01', title: 'Поднеси и Дистрибуирај', body: 'Прикачи. Достигни публика низ 11 земји на платформа изградена за регионот.' },
+            { n: '02', title: 'Пристап до Фестивали', body: 'Поврзи ги твоите филмови со балканските фестивали и станете познати за организаторите.' },
+            { n: '03', title: 'Транспарентни Цени', body: '600 денари / месечно по наслов за одржување. Првиот месец 300 денари. Без скриени трошоци.' },
           ].map((item, i) => (
             <div key={i} style={{
               display: 'flex', gap: '24px', alignItems: 'flex-start',
@@ -273,8 +267,8 @@ export default function DirectorsPage() {
             border: '0.5px solid #1a1610', borderRadius: '1px', overflow: 'hidden',
           }}>
             {[
-              { id: 'login', label: 'Log In' },
-              { id: 'signup', label: 'Register' },
+              { id: 'login', label: 'Најави се' },
+              { id: 'signup', label: 'Регистрирај се' },
             ].map((m) => (
               <button
                 key={m.id}
@@ -300,13 +294,13 @@ export default function DirectorsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
             {mode === 'signup' && (
               <>
-                <Field label="Full Name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" />
-                <Field label="Production Company" value={company} onChange={e => setCompany(e.target.value)} placeholder="Optional" />
+                <Field label="Име и Презиме" value={name} onChange={e => setName(e.target.value)} placeholder="Твоето име и презиме" />
+                <Field label="Продуцентска куќа" value={company} onChange={e => setCompany(e.target.value)} placeholder="Опционално" />
               </>
             )}
-            <Field label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" />
+            <Field label="Емаил" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" />
             <Field
-              label="Password"
+              label="Лозинка"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -351,7 +345,7 @@ export default function DirectorsPage() {
             onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#fff0c0'; }}
             onMouseLeave={e => { e.currentTarget.style.background = '#c9a84c'; }}
           >
-            {loading ? '...' : mode === 'login' ? 'Enter Portal' : 'Create Director Account'}
+            {loading ? '...' : mode === 'login' ? 'Пристапи кон порталот' : 'Креирај Режисерски Профил'}
           </button>
 
           {/* Divider */}
@@ -383,7 +377,7 @@ export default function DirectorsPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Continue with Google
+            Продолжи со Google
           </button>
 
           {/* Pricing note */}
@@ -392,11 +386,11 @@ export default function DirectorsPage() {
             lineHeight: '1.8', marginTop: '28px', textAlign: 'center',
             fontFamily: 'sans-serif',
           }}>
-            By registering you agree to the director listing terms.<br />
+            Со регистрирање се согласувате со условите за режисери.<br />
             <a href="/pricing" style={{ color: '#3a3020', textDecoration: 'none' }}
               onMouseEnter={e => e.currentTarget.style.color = '#c9a84c'}
               onMouseLeave={e => e.currentTarget.style.color = '#3a3020'}
-            >View pricing →</a>
+            >Види цени →</a>
           </p>
 
         </div>
