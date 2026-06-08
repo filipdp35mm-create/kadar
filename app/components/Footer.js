@@ -69,7 +69,7 @@ export default function Footer() {
       style={{
         background: '#080808',
         borderTop: '0.5px solid #1a1610',
-        padding: '60px 80px 0',
+        padding: '60px clamp(16px, 8vw, 80px) 0',
         marginTop: '80px',
         position: 'relative',
         zIndex: 10,
@@ -82,8 +82,8 @@ export default function Footer() {
       {/* Top row — logo + columns */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
-        gap: '40px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: 'clamp(24px, 4vw, 40px)',
         paddingBottom: '48px',
         borderBottom: '0.5px solid #1a1610',
       }}>
@@ -179,8 +179,8 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '20px 0',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '20px 0', flexWrap: 'wrap', gap: '16px',
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.8s ease 0.4s',
       }}>
@@ -194,7 +194,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div style={{ fontSize: '11px', color: '#5a5040', letterSpacing: '2px', textTransform: 'uppercase' }}>
+        <div className="footer-tagline" style={{ fontSize: '11px', color: '#5a5040', letterSpacing: '2px', textTransform: 'uppercase' }}>
           Short Film &middot; Music Video &middot; Balkan Cinema
         </div>
 
