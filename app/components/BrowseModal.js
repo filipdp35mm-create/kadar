@@ -285,7 +285,7 @@ const { data } = await query;
       }} />
 
       {/* Modal */}
-      <div style={{
+      <div className="browse-modal" style={{
         position: 'fixed', top: '50%', left: '50%',
         transform: visible ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0.96)',
         zIndex: 101, background: '#0a0a0a',
@@ -296,12 +296,13 @@ const { data } = await query;
         transition: 'opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
 
-        <button onClick={handleClose} style={{
-          position: 'absolute', top: '20px', right: '24px',
-          background: 'none', border: 'none', color: '#5a5040',
-          fontSize: '28px', cursor: 'pointer', zIndex: 10, lineHeight: 1,
-          transition: 'color 0.2s ease',
-        }}
+<button onClick={handleClose} style={{
+  position: 'fixed', bottom: '24px', right: '24px',
+  background: '#0a0a0a', border: '0.5px solid #2a2418', color: '#5a5040',
+  fontSize: '20px', cursor: 'pointer', zIndex: 10, lineHeight: 1,
+  transition: 'color 0.2s ease', width: '44px', height: '44px',
+  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+}}
           onMouseEnter={e => e.currentTarget.style.color = '#f0e8d0'}
           onMouseLeave={e => e.currentTarget.style.color = '#5a5040'}
         >×</button>

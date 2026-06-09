@@ -64,3 +64,14 @@ html {
 @media (max-width: 768px) {
   .browse-year-select { display: none !important; }
 }
+
+@media (max-width: 768px) {
+  .browse-modal {
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+  }
+}
