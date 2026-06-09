@@ -586,12 +586,13 @@ export default function DirectorsDashboard() {
                         </div>
                         <div style={{ fontSize: '10px', color: '#5a5040', fontFamily: 'sans-serif', letterSpacing: '1px' }}>{s.type === 'short_film' ? 'Краток филм' : 'Музичко видео'}</div>
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>{formatDate(s.submitted_at)}</div>
-                        <Badge status={
-                          s.status === 'live' ? 'live' :
-                          s.status === 'approved' ? 'approved' :
-                          s.status === 'rejected' ? 'rejected' :
-                          'pending'
-                        } />
+<Badge status={
+  s.status === 'live' ? 'live' :
+  s.status === 'approved' ? 'approved' :
+  s.status === 'rejected' ? 'rejected' :
+  s.status === 'removed' ? 'removed' :
+  'pending'
+} />
                         <div style={{ fontSize: '10px', color: '#3a3020', fontFamily: 'sans-serif' }}>
                           {s.status === 'live' ? <Badge status="paid" /> : '—'}
                         </div>
