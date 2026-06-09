@@ -71,6 +71,8 @@ function Field({ label, type = 'text', value, onChange, onKeyDown, placeholder }
 
 // ── Main Page ──────────────────────────────────────────────────────────
 export default function DirectorsPage() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [gatePassword, setGatePassword] = useState('');
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -127,6 +129,32 @@ export default function DirectorsPage() {
     transform: visible ? 'translateY(0)' : 'translateY(20px)',
     transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
   });
+
+  if (!unlocked) return (
+  <div style={{ minHeight: '100vh', background: '#060605', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ border: '0.5px solid #1a1610', padding: '40px', background: '#080806', minWidth: '300px' }}>
+      <div style={{ fontSize: '9px', letterSpacing: '4px', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '24px' }}>КАДАР · ПОРТАЛ ЗА РЕЖИСЕРИ</div>
+      <input
+        type="password"
+        value={gatePassword}
+        onChange={e => setGatePassword(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && gatePassword === 'kadar2026mk' && setUnlocked(true)}
+        placeholder="Внеси код"
+        style={{
+          width: '100%', background: '#0a0905', border: '0.5px solid #2a2418',
+          color: '#f0e8d0', padding: '10px 13px', fontSize: '13px', outline: 'none',
+          boxSizing: 'border-box', fontFamily: 'Georgia, serif', marginBottom: '12px',
+          borderRadius: '1px',
+        }}
+      />
+      <button onClick={() => gatePassword === 'kadar2026mk' && setUnlocked(true)} style={{
+        width: '100%', background: '#c9a84c', border: 'none', color: '#060605',
+        padding: '11px', fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase',
+        cursor: 'pointer', fontFamily: 'sans-serif', fontWeight: '700', borderRadius: '1px',
+      }}>Влези</button>
+    </div>
+  </div>
+);
 
   return (
     <main style={{
