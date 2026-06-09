@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 function paymentStatusColor(status) {
+  if (status === 'removed') return '#3a3020';
   if (status === 'paid') return '#6ab87a';
   if (status === 'live') return '#6ab87a';
   if (status === 'approved') return '#c9a84c';
@@ -33,6 +34,7 @@ const STATUS_LABELS = {
   live:     'Live',
   paid:     'Активно',
   late:     'Задоцнето',
+  removed:  'Одстрането',
 };
 
 function Badge({ status }) {
@@ -160,6 +162,20 @@ export default function DirectorsDashboard() {
   const [formPoster, setFormPoster] = useState('');
   const [formImdb, setFormImdb] = useState('');
   const [formFestivals, setFormFestivals] = useState('');
+  const [formAwards, setFormAwards] = useState('');
+  const [formTrailer, setFormTrailer] = useState('');
+  const [formCast, setFormCast] = useState('');
+  const [formGenre, setFormGenre] = useState([]);
+  const [formStills, setFormStills] = useState('');
+  const [formColor, setFormColor] = useState('#c9a84c');
+  const [formReleaseDate, setFormReleaseDate] = useState('');
+  const [rights1, setRights1] = useState(false);
+  const [rights2, setRights2] = useState(false);
+  const [rights3, setRights3] = useState(false);
+  const [rights4, setRights4] = useState(false);
+  const [rights5, setRights5] = useState(false);
+  const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [agreementScrolled, setAgreementScrolled] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState(null);
   const [submitError, setSubmitError] = useState(null);
@@ -247,7 +263,9 @@ export default function DirectorsDashboard() {
   }
 
   async function submitFilm() {
-    if (!formTitle || !formLink) { setSubmitError('Title and transfer link are required.'); return; }
+    if (!formTitle || !formLink) { setSubmitError('Насловот и линкот за пренос се задолжителни.'); return; }
+    if (!rights1 || !rights2 || !rights3 || !rights4 || !rights5) { setSubmitError('Мора да ги потврдите сите права.'); return; }
+    if (!agreementAccepted) { setSubmitError('Мора да се согласите со договорот за лиценцирање.'); return; }
     setSubmitting(true); setSubmitError(null); setSubmitMsg(null);
 
     const payload = {
@@ -258,6 +276,17 @@ export default function DirectorsDashboard() {
       description: formDescription, transfer_link: formLink,
       poster_link: formPoster, imdb_link: formImdb,
       festival_history: formFestivals,
+      awards_history: formAwards,
+      trailer_link: formTrailer,
+      key_cast: formCast,
+      genre: formGenre.join(', '),
+      stills_link: formStills,
+      color_hex: formColor,
+      release_date: formReleaseDate || null,
+      rights_1: rights1, rights_2: rights2, rights_3: rights3,
+      rights_4: rights4, rights_5: rights5,
+      agreement_accepted: true,
+      agreement_accepted_at: new Date().toISOString(),
     };
 
     const { error } = await supabase.from('film_submissions').insert(payload);
@@ -282,6 +311,10 @@ export default function DirectorsDashboard() {
     setFormTitle(''); setFormType('short_film'); setFormYear('');
     setFormCountry(''); setFormDuration(''); setFormDescription('');
     setFormLink(''); setFormPoster(''); setFormImdb(''); setFormFestivals('');
+    setFormAwards(''); setFormTrailer(''); setFormCast(''); setFormGenre([]);
+    setFormStills(''); setFormColor('#c9a84c'); setFormReleaseDate('');
+    setRights1(false); setRights2(false); setRights3(false);
+    setRights4(false); setRights5(false); setAgreementAccepted(false); setAgreementScrolled(false);
 
     // Refresh submissions
     const { data: subs } = await supabase.from('film_submissions').select('*').eq('director_id', user.id).order('submitted_at', { ascending: false });
@@ -588,17 +621,17 @@ export default function DirectorsDashboard() {
                   padding: '48px', textAlign: 'center',
                   opacity: 0.6,
                 }}>
-                  <div style={{ fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#5a5040', fontFamily: 'sans-serif', marginBottom: '12px' }}>
+                  <div style={{ fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#bbbbbb', fontFamily: 'sans-serif', marginBottom: '12px' }}>
                     {profile?.verification_status === 'pending' ? 'Верификацијата е во тек' : 'Потребна е верификација'}
                   </div>
-                  <div style={{ fontSize: '13px', color: '#3a3020', lineHeight: '1.8', marginBottom: '20px' }}>
+                  <div style={{ fontSize: '13px', color: '#919191', lineHeight: '1.8', marginBottom: '20px' }}>
                     {profile?.verification_status === 'pending'
-                      ? 'Your verification request is under review. You will be notified once approved.'
-                      : 'You must be a verified director before submitting films.'}
+                      ? 'Твоето барање за верификација е примено и во процес на разгледување. Ќе добиеш известување за резултатот наскоро.'
+                      : 'Потребна е верификација за да можете да поднесете филм.'}
                   </div>
                   {profile?.verification_status !== 'pending' && (
                     <button onClick={() => setTab('verification')} style={{
-                      background: 'none', border: '0.5px solid #2a2418', color: '#8a7f6a',
+                      background: 'none', border: '0.5px solid #ffffff', color: '#8a7f6a',
                       padding: '10px 24px', fontSize: '10px', letterSpacing: '3px',
                       textTransform: 'uppercase', cursor: 'pointer', borderRadius: '1px', fontFamily: 'sans-serif',
                     }}>Побарај верификација →</button>
@@ -612,23 +645,135 @@ export default function DirectorsDashboard() {
                   padding: '36px', background: '#080806',
                   maxWidth: '680px',
                 }}>
+                  {/* Basic info */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
                     <Field label="Наслов на филм" value={formTitle} onChange={e => setFormTitle(e.target.value)} placeholder="Наслов на вашиот филм" required />
-                    <SelectField label="Type" value={formType} onChange={e => setFormType(e.target.value)} required options={[
-                      { value: 'short_film', label: 'Short Film' },
-                      { value: 'music_video', label: 'Music Video' },
+                    <SelectField label="Вид" value={formType} onChange={e => setFormType(e.target.value)} required options={[
+                      { value: 'short_film', label: 'Краток филм' },
+                      { value: 'music_video', label: 'Музичко видео' },
                     ]} />
                     <Field label="Година" type="number" value={formYear} onChange={e => setFormYear(e.target.value)} placeholder="2024" />
                     <Field label="Држава" value={formCountry} onChange={e => setFormCountry(e.target.value)} placeholder="пр. Северна Македонија" />
                     <Field label="Траење (минути)" type="number" value={formDuration} onChange={e => setFormDuration(e.target.value)} placeholder="пр. 15" />
                     <Field label="IMDb линк" value={formImdb} onChange={e => setFormImdb(e.target.value)} placeholder="https://imdb.com/title/..." />
+                    <Field label="Клучни членови на екипа" value={formCast} onChange={e => setFormCast(e.target.value)} placeholder="пр. Ана Петровска, Марко Илиевски" />
+                    <Field label="Посакуван датум на објавување" type="date" value={formReleaseDate} onChange={e => setFormReleaseDate(e.target.value)} />
                   </div>
 
+                  {/* Genre */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#5a5040', fontFamily: 'sans-serif', marginBottom: '10px' }}>Жанр</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {['Драма', 'Комедија', 'Документарец', 'Хорор', 'Трилер', 'Sci-Fi', 'Романса', 'Акција', 'Анимација', 'Криминал', 'Мјузикл'].map(g => (
+                        <button key={g} type="button" onClick={() => setFormGenre(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g])} style={{
+                          background: formGenre.includes(g) ? '#c9a84c' : 'none',
+                          border: `0.5px solid ${formGenre.includes(g) ? '#c9a84c' : '#2a2418'}`,
+                          color: formGenre.includes(g) ? '#060605' : '#8a7f6a',
+                          padding: '6px 14px', fontSize: '10px', letterSpacing: '2px',
+                          textTransform: 'uppercase', cursor: 'pointer', borderRadius: '1px',
+                          fontFamily: 'sans-serif', transition: 'all 0.2s ease',
+                        }}>{g}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Color picker */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#5a5040', fontFamily: 'sans-serif', marginBottom: '10px' }}>Боја на филмот</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <input type="color" value={formColor} onChange={e => setFormColor(e.target.value)} style={{ width: '48px', height: '40px', border: '0.5px solid #2a2418', borderRadius: '1px', background: 'none', cursor: 'pointer', padding: '2px' }} />
+                      <div style={{ fontSize: '12px', color: '#8a7f6a', fontFamily: 'sans-serif', letterSpacing: '2px' }}>{formColor.toUpperCase()}</div>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '1px', background: formColor, border: '0.5px solid #2a2418' }} />
+                    </div>
+                  </div>
+
+                  {/* Links */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '20px' }}>
-                    <Field label="Линк за прикачување" value={formLink} onChange={e => setFormLink(e.target.value)} placeholder="SwissTransfer или WeTransfer линк до филмот" required />
+                    <Field label="Линк за прикачување на филмот *" value={formLink} onChange={e => setFormLink(e.target.value)} placeholder="SwissTransfer или WeTransfer линк" required />
+                    <Field label="Линк за трејлер" value={formTrailer} onChange={e => setFormTrailer(e.target.value)} placeholder="Vimeo, YouTube или директен линк" />
                     <Field label="Линк до постер" value={formPoster} onChange={e => setFormPoster(e.target.value)} placeholder="Линк до постер за филмот" />
+                    <Field label="Линк до кадри од филмот (стилови)" value={formStills} onChange={e => setFormStills(e.target.value)} placeholder="Google Drive, Dropbox или сличен линк" />
                     <Field label="Синопсис" value={formDescription} onChange={e => setFormDescription(e.target.value)} placeholder="Опис на филмот" textarea />
-                    <Field label="Фестивалска историја" value={formFestivals} onChange={e => setFormFestivals(e.target.value)} placeholder="Наброј ги фестивалите каде што е прикажан филмот..." textarea />
+                    <Field label="Фестивалска историја" value={formFestivals} onChange={e => setFormFestivals(e.target.value)} placeholder="Фестивали каде што е прикажан филмот..." textarea />
+                    <Field label="Награди" value={formAwards} onChange={e => setFormAwards(e.target.value)} placeholder="Награди и признанија..." textarea />
+                  </div>
+
+                  {/* Rights */}
+                  <div style={{ borderTop: '0.5px solid #1a1610', paddingTop: '24px', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '16px' }}>Потврда на права</div>
+                    {[
+                      { state: rights1, set: setRights1, text: 'Јас сум единствениот носител на сите права на овој филм или ги поседувам сите потребни дозволи за негово користење' },
+                      { state: rights2, set: setRights2, text: 'Сета музика во филмот е оригинална или целосно лиценцирана за дигитално прикажување и промотивна употреба' },
+                      { state: rights3, set: setRights3, text: 'Сите лица кои се појавуваат во филмот имаат дадено согласност да бидат снимани и дистрибуирани дигитално' },
+                      { state: rights4, set: setRights4, text: 'Овој филм не ги нарушува правата на интелектуална сопственост на трети лица' },
+                      { state: rights5, set: setRights5, text: 'Потврдувам дека не постојат постоечки договори што ме спречуваат да го пријавам овој филм на платформата Kadar' },
+                    ].map((r, i) => (
+                      <div key={i} onClick={() => r.set(!r.state)} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '14px', cursor: 'pointer' }}>
+                        <div style={{
+                          width: '16px', height: '16px', flexShrink: 0, marginTop: '2px',
+                          border: `0.5px solid ${r.state ? '#c9a84c' : '#2a2418'}`,
+                          background: r.state ? '#c9a84c' : 'none', borderRadius: '1px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.2s ease',
+                        }}>
+                          {r.state && <span style={{ color: '#060605', fontSize: '10px', fontWeight: '700' }}>✓</span>}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#8a7f6a', lineHeight: '1.7', letterSpacing: '0.3px' }}>{r.text}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Licensing agreement */}
+                  <div style={{ borderTop: '0.5px solid #1a1610', paddingTop: '24px', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase', color: '#c9a84c', fontFamily: 'sans-serif', marginBottom: '16px' }}>Договор за лиценцирање</div>
+                    <div
+                      onScroll={e => { const el = e.currentTarget; if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) setAgreementScrolled(true); }}
+                      style={{ height: '240px', overflowY: 'auto', border: '0.5px solid #2a2418', borderRadius: '1px', padding: '20px', background: '#060605', marginBottom: '16px', fontSize: '12px', color: '#8a7f6a', lineHeight: '1.9', letterSpacing: '0.3px' }}
+                    >
+                      <div style={{ fontSize: '15px', fontWeight: '700', color: '#f0e8d0', marginBottom: '16px' }}>Пред да го поднесеш твојот филм, прочитај го ова внимателно.</div>
+                      <p style={{ marginBottom: '12px' }}>Со поднесувањето на твојот филм на Кадар, ги прифаќаш следните услови:</p>
+                      <div style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px', marginTop: '16px' }}>Што ни даваш за право да правиме:</div>
+                      <ol style={{ paddingLeft: '20px', marginBottom: '16px' }}>
+                        <li style={{ marginBottom: '6px' }}>Да го поставиме твојот филм на платформата Кадар</li>
+                        <li style={{ marginBottom: '6px' }}>Да го вклучиме во бесплатната неделна ротација и/или платената библиотека</li>
+                        <li style={{ marginBottom: '6px' }}>Да ги користиме насловот, постерот, кадрите и клипови до 3 минути за промоција на социјалните мрежи и веб страницата</li>
+                      </ol>
+                      <div style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Што ти задржуваш:</div>
+                      <ol style={{ paddingLeft: '20px', marginBottom: '16px' }}>
+                        <li style={{ marginBottom: '6px' }}>Целосната сопственост над твојот филм</li>
+                        <li style={{ marginBottom: '6px' }}>Правото да го дистрибуираш на други платформи (освен ако не е договорена ексклузивност)</li>
+                      </ol>
+                      <div style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Твоја одговорност:</div>
+                      <ol style={{ paddingLeft: '20px', marginBottom: '16px' }}>
+                        <li style={{ marginBottom: '6px' }}>Потврдуваш дека ги поседуваш сите права врз филмот, вклучувајќи ја музиката</li>
+                        <li style={{ marginBottom: '6px' }}>Потврдуваш дека никој друг не може да побара права врз твојот филм</li>
+                      </ol>
+                      <div style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Важно:</div>
+                      <ol style={{ paddingLeft: '20px', marginBottom: '16px' }}>
+                        <li style={{ marginBottom: '6px' }}>Твојот филм нема да биде објавен без твоја финална потврда</li>
+                        <li style={{ marginBottom: '6px' }}>Можеш да побараш отстранување на филмот со 30 дена писмено известување</li>
+                        <li style={{ marginBottom: '6px' }}>Филмовите во бесплатната ротација ќе бидат прикажани со реклами</li>
+                      </ol>
+                    </div>
+                    {!agreementScrolled && (
+                      <div style={{ fontSize: '10px', color: '#5a5040', fontFamily: 'sans-serif', letterSpacing: '1px', marginBottom: '12px' }}>↓ Скролај до крај за да го активираш полето</div>
+                    )}
+                    <div onClick={() => agreementScrolled && setAgreementAccepted(!agreementAccepted)} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: agreementScrolled ? 'pointer' : 'not-allowed', opacity: agreementScrolled ? 1 : 0.4 }}>
+                      <div style={{
+                        width: '16px', height: '16px', flexShrink: 0, marginTop: '2px',
+                        border: `0.5px solid ${agreementAccepted ? '#c9a84c' : '#2a2418'}`,
+                        background: agreementAccepted ? '#c9a84c' : 'none', borderRadius: '1px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.2s ease',
+                      }}>
+                        {agreementAccepted && <span style={{ color: '#060605', fontSize: '10px', fontWeight: '700' }}>✓</span>}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#8a7f6a', lineHeight: '1.7' }}>
+                        Ги прочитав и се согласувам со условите и правилата за режисери на Kadar платформата
+                        <br />
+                        <a href="#" onClick={e => e.preventDefault()} style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '1px' }}>Целосни услови и правила →</a>
+                      </div>
+                    </div>
                   </div>
 
                   {submitError && (
