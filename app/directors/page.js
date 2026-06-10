@@ -129,6 +129,8 @@ export default function DirectorsPage() {
     transform: visible ? 'translateY(0)' : 'translateY(20px)',
     transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
   });
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 
   if (!unlocked) return (
   <div style={{ minHeight: '100vh', background: '#060605', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -162,10 +164,10 @@ export default function DirectorsPage() {
       background: '#060605',
       color: '#f0e8d0',
       fontFamily: 'Georgia, "Times New Roman", serif',
-      display: 'grid',
-      gridTemplateColumns: '1fr 480px',
-      position: 'relative',
-      overflow: 'hidden',
+display: 'grid',
+gridTemplateColumns: isMobile ? '1fr' : '1fr 480px',
+position: 'relative',
+overflow: 'hidden',
     }}>
 
       {/* ── Grain overlay ── */}
@@ -176,14 +178,14 @@ export default function DirectorsPage() {
       }} />
 
       {/* ── LEFT PANEL — editorial ── */}
-      <div style={{
-        position: 'relative', zIndex: 1,
-        borderRight: '0.5px solid #1a1610',
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '48px 64px',
-        overflow: 'hidden',
-      }}>
+<div style={{
+  position: 'relative', zIndex: 1,
+  borderRight: '0.5px solid #1a1610',
+  display: isMobile ? 'none' : 'flex', flexDirection: 'column',
+  justifyContent: 'space-between',
+  padding: '48px 64px',
+  overflow: 'hidden',
+}}>
 
         {/* Ambient gold glow */}
         <div style={{
@@ -269,7 +271,7 @@ export default function DirectorsPage() {
       <div style={{
         position: 'relative', zIndex: 1,
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
-        padding: '64px 56px',
+padding: isMobile ? '48px 24px' : '64px 56px',
         background: '#080806',
       }}>
 

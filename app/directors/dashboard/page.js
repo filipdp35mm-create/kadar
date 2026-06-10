@@ -359,7 +359,8 @@ export default function DirectorsDashboard() {
     setVerifying(false);
   }
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+useEffect(() => { setIsMobile(window.innerWidth < 768); }, []);
 
   const fadeUp = (delay = 0) => ({
     opacity: visible ? 1 : 0,
@@ -396,7 +397,7 @@ export default function DirectorsDashboard() {
         backgroundSize: '180px 180px', opacity: 0.4,
       }} />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '220px 1fr', minHeight: '100vh' }}>
+<div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
 
 {isMobile && (
   <button onClick={() => setSidebarOpen(o => !o)} style={{
@@ -482,7 +483,7 @@ export default function DirectorsDashboard() {
         </aside>
 
         {/* ── MAIN CONTENT ── */}
-        <div style={{ padding: isMobile ? '72px 20px 32px' : '48px 56px', overflowY: 'auto' }}>
+        <div style={{ padding: isMobile ? '72px 20px 32px' : '48px 56px', overflowY: 'auto', marginLeft: isMobile ? '0' : '220px' }}>
 
 
           {/* ── OVERVIEW ── */}
