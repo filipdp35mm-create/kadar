@@ -141,6 +141,7 @@ export default function DirectorsDashboard() {
   const [tab, setTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Profile edit state
   const [editName, setEditName] = useState('');
@@ -358,6 +359,8 @@ export default function DirectorsDashboard() {
     setVerifying(false);
   }
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const fadeUp = (delay = 0) => ({
     opacity: visible ? 1 : 0,
     transform: visible ? 'translateY(0)' : 'translateY(16px)',
@@ -393,16 +396,38 @@ export default function DirectorsDashboard() {
         backgroundSize: '180px 180px', opacity: 0.4,
       }} />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: '100vh' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '220px 1fr', minHeight: '100vh' }}>
+
+{isMobile && (
+  <button onClick={() => setSidebarOpen(o => !o)} style={{
+    position: 'fixed', top: 16, left: 16, zIndex: 200,
+    background: '#080806', border: '0.5px solid #2a2418',
+    color: '#c9a84c', width: 40, height: 40,
+    display: 'flex', flexDirection: 'column', alignItems: 'center',
+    justifyContent: 'center', gap: '5px', cursor: 'pointer', borderRadius: '1px',
+  }}>
+    <span style={{ width: 16, height: '0.5px', background: '#c9a84c', display: 'block' }} />
+    <span style={{ width: 16, height: '0.5px', background: '#c9a84c', display: 'block' }} />
+    <span style={{ width: 16, height: '0.5px', background: '#c9a84c', display: 'block' }} />
+  </button>
+)}
+{isMobile && sidebarOpen && (
+  <div onClick={() => setSidebarOpen(false)} style={{
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 100,
+  }} />
+)}
 
         {/* ── SIDEBAR ── */}
-        <aside style={{
-          borderRight: '0.5px solid #1a1610',
-          padding: '40px 28px',
-          display: 'flex', flexDirection: 'column', gap: '0',
-          position: 'sticky', top: 0, height: '100vh',
-          background: '#060605',
-        }}>
+<aside style={{
+  borderRight: '0.5px solid #1a1610',
+  padding: '40px 28px',
+  display: 'flex', flexDirection: 'column', gap: '0',
+  position: 'fixed', top: 0, left: 0, height: '100vh',
+  background: '#060605',
+  zIndex: 150, width: '220px',
+  transform: isMobile ? (sidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'translateX(0)',
+  transition: 'transform 0.3s ease',
+}}>
           {/* Logo */}
           <div style={{ marginBottom: '40px' }}>
             <img src="/KADAR LOGO.png" alt="Кадар" style={{ height: '28px', mixBlendMode: 'screen', opacity: 0.8 }} />
@@ -425,7 +450,7 @@ export default function DirectorsDashboard() {
           {/* Tabs */}
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
             {TABS.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
+              <button key={t.id} onClick={() => { setTab(t.id); setSidebarOpen(false); }} style={{
                 background: tab === t.id ? '#121009' : 'none',
                 border: 'none',
                 borderLeft: `1.5px solid ${tab === t.id ? '#c9a84c' : 'transparent'}`,
@@ -457,7 +482,8 @@ export default function DirectorsDashboard() {
         </aside>
 
         {/* ── MAIN CONTENT ── */}
-        <div style={{ padding: '48px 56px', overflowY: 'auto' }}>
+        <div style={{ padding: isMobile ? '72px 20px 32px' : '48px 56px', overflowY: 'auto' }}>
+
 
           {/* ── OVERVIEW ── */}
           {tab === 'overview' && (
@@ -470,7 +496,7 @@ export default function DirectorsDashboard() {
               </div>
 
               {/* Stats row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: '#1a1610', border: '0.5px solid #1a1610', borderRadius: '2px', marginBottom: '40px', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '1px', background: '#1a1610', border: '0.5px solid #1a1610', borderRadius: '2px', marginBottom: '40px', overflow: 'hidden' }}>
                 {[
                   { label: 'Активни филмови', value: activeFilms.length },
                   { label: 'На чекање', value: pendingSubs.length },
@@ -647,7 +673,7 @@ export default function DirectorsDashboard() {
                   maxWidth: '680px',
                 }}>
                   {/* Basic info */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
                     <Field label="Наслов на филм" value={formTitle} onChange={e => setFormTitle(e.target.value)} placeholder="Наслов на вашиот филм" required />
                     <SelectField label="Вид" value={formType} onChange={e => setFormType(e.target.value)} required options={[
                       { value: 'short_film', label: 'Краток филм' },
@@ -838,11 +864,11 @@ export default function DirectorsDashboard() {
                     </div>
                   )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                       <Field label="Име и презиме" value={verifFullName} onChange={e => setVerifFullName(e.target.value)} placeholder="Your full name" required />
                       <Field label="Држава" value={verifCountry} onChange={e => setVerifCountry(e.target.value)} placeholder="e.g. North Macedonia" required />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                       <Field label="Продуцентска куќа" value={verifCompany} onChange={e => setVerifCompany(e.target.value)} placeholder="e.g. Filmmakers Inc." />
                       <Field label="Телефонски број" value={verifPhone} onChange={e => setVerifPhone(e.target.value)} placeholder="+389 ..." />
                     </div>
@@ -881,12 +907,12 @@ export default function DirectorsDashboard() {
 
               <div style={{ border: '0.5px solid #1a1610', borderRadius: '1px', padding: '36px', background: '#080806', maxWidth: '580px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                     <Field label="Име и презиме" value={editName} onChange={e => setEditName(e.target.value)} placeholder="Вашето име и презиме" />
                     <Field label="Компанија" value={editCompany} onChange={e => setEditCompany(e.target.value)} placeholder="Опционално" />
                   </div>
                   <Field label="Биографија" value={editBio} onChange={e => setEditBio(e.target.value)} placeholder="Биографија за вас и вашата работа..." textarea />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                     <Field label="Вебстраница" value={editWebsite} onChange={e => setEditWebsite(e.target.value)} placeholder="https://yoursite.com" />
                     <Field label="Држава" value={editCountry} onChange={e => setEditCountry(e.target.value)} placeholder="пр. Северна Македонија" />
                   </div>
