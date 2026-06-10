@@ -14,7 +14,7 @@ const flickerStyle = `
   }
 `;
 
-const PROGRESS = 9; // ← change this number whenever you want
+const PROGRESS = 16; // ← change this number whenever you want
 
 export default function ComingSoon() {
   const [email, setEmail] = useState('');
