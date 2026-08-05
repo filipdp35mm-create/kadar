@@ -123,6 +123,53 @@ function SelectField({ label, value, onChange, options, required }) {
   );
 }
 
+// ── Countries list ────────────────────────────────────────────────────
+const COUNTRIES = [
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda',
+  'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain',
+  'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan',
+  'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria',
+  'Burkina Faso', 'Burundi', 'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada',
+  'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros',
+  'Congo (Congo-Brazzaville)', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus',
+  'Czechia', 'Democratic Republic of the Congo', 'Denmark', 'Djibouti', 'Dominica',
+  'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea',
+  'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France',
+  'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada',
+  'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras',
+  'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland',
+  'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya',
+  'Kiribati', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon',
+  'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+  'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta',
+  'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia',
+  'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique',
+  'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand',
+  'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway',
+  'Oman', 'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea',
+  'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania',
+  'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia',
+  'Saint Vincent and the Grenadines', 'Samoa', 'San Marino',
+  'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles',
+  'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands',
+  'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain',
+  'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+  'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo',
+  'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan',
+  'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom',
+  'United States of America', 'Uruguay', 'Uzbekistan', 'Vanuatu',
+  'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
+].map(c => ({ value: c, label: c }));
+const COUNTRY_OPTIONS = [{ value: '', label: 'Select country...' }, ...COUNTRIES];
+
+// ── IMDb link validation ──────────────────────────────────────────────
+// Accepts links like https://www.imdb.com/name/nm11261199/?ref_=ext_shr_lnk
+const IMDB_LINK_REGEX = /^https:\/\/(www\.)?imdb\.com\/name\/nm\d+\/?(\?[^\s]*)?$/i;
+function isValidImdbLink(link) {
+  if (!link) return true; // optional field
+  return IMDB_LINK_REGEX.test(link.trim());
+}
+
 // ── Nav tabs ───────────────────────────────────────────────────────────
 const TABS = [
   { id: 'overview', label: 'Преглед' },
@@ -187,6 +234,7 @@ export default function DirectorsDashboard() {
   const [verifCountry, setVerifCountry] = useState('');
   const [verifPhone, setVerifPhone] = useState('');
   const [verifImdb, setVerifImdb] = useState('');
+  const [verifImdbError, setVerifImdbError] = useState(null);
   const [verifWork, setVerifWork] = useState('');
   const [verifNote, setVerifNote] = useState('');
   const [verifying, setVerifying] = useState(false);
@@ -333,6 +381,10 @@ export default function DirectorsDashboard() {
 
     async function submitVerification() {
     if (!verifFullName || !verifCountry) { setVerifError('Full name and country are required.'); return; }
+    if (!isValidImdbLink(verifImdb)) {
+      setVerifError('Please enter a valid IMDb link, e.g. https://www.imdb.com/name/nm11261199/');
+      return;
+    }
     setVerifying(true); setVerifError(null); setVerifMsg(null);
 
     const { error } = await supabase.from('director_profiles')
@@ -867,13 +919,22 @@ useEffect(() => { setIsMobile(window.innerWidth < 768); }, []);
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                       <Field label="Име и презиме" value={verifFullName} onChange={e => setVerifFullName(e.target.value)} placeholder="Your full name" required />
-                      <Field label="Држава" value={verifCountry} onChange={e => setVerifCountry(e.target.value)} placeholder="e.g. North Macedonia" required />
+                      <SelectField label="Држава" value={verifCountry} onChange={e => setVerifCountry(e.target.value)} options={COUNTRY_OPTIONS} required />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                       <Field label="Продуцентска куќа" value={verifCompany} onChange={e => setVerifCompany(e.target.value)} placeholder="e.g. Filmmakers Inc." />
                       <Field label="Телефонски број" value={verifPhone} onChange={e => setVerifPhone(e.target.value)} placeholder="+389 ..." />
                     </div>
-                    <Field label="IMDB линк" value={verifImdb} onChange={e => setVerifImdb(e.target.value)} placeholder="https://imdb.com/name/..." />
+                    <div>
+                      <Field label="IMDB линк" value={verifImdb} onChange={e => {
+                        const val = e.target.value;
+                        setVerifImdb(val);
+                        setVerifImdbError(isValidImdbLink(val) ? null : 'Внесете валиден IMDb линк, пр. https://www.imdb.com/name/nm11261199/');
+                      }} placeholder="https://www.imdb.com/name/nm11261199/" />
+                      {verifImdbError && (
+                        <div style={{ fontSize: '11px', color: '#e05a3a', marginTop: '6px' }}>{verifImdbError}</div>
+                      )}
+                    </div>
                     <Field label="Претходни дела" value={verifWork} onChange={e => setVerifWork(e.target.value)} placeholder="Links to previous films, Vimeo, YouTube..." textarea />
                     <Field label="Нешто друго што би сакале да знаме" value={verifNote} onChange={e => setVerifNote(e.target.value)} placeholder="Optional note..." textarea />
                   </div>
